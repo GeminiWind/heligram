@@ -16,6 +16,7 @@ yarn-error.log
 log/*
 !log/.gitkeep
 
-# Ignore related-coverage 
+# Ignore related-coverage
 .nyc_output
 coverage
+.env
