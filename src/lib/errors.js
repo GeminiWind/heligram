@@ -3,7 +3,7 @@ import JsonApiError from './jsonApiError';
 class InternalError extends JsonApiError {
   constructor(message) {
     let internalError = {
-      title: 'IntenralError',
+      title: 'InternalError',
       code: 'InternalError',
       status: 500,
       detail: 'InternalError',
@@ -26,49 +26,49 @@ class InternalError extends JsonApiError {
 
 class NotFoundError extends JsonApiError {
   constructor(message) {
-    let internalError = {
+    let notFoundError = {
       title: 'NotFoundError',
       code: 'NotFoundError',
       status: 404,
       detail: 'NotFoundError',
     };
     if (typeof message === 'string') {
-      internalError = {
-        ...internalError,
+      notFoundError = {
+        ...notFoundError,
         detail: message,
       };
     }
     if (typeof message === 'object') {
-      internalError = {
-        ...internalError,
+      notFoundError = {
+        ...notFoundError,
         ...message,
       };
     }
-    super(internalError);
+    super(notFoundError);
   }
 }
 
 class BadRequestError extends JsonApiError {
   constructor(message) {
-    let internalError = {
+    let badRequestError = {
       title: 'BadRequestError',
       code: 'BadRequestError',
       status: 400,
       detail: 'BadRequestError',
     };
     if (typeof message === 'string') {
-      internalError = {
-        ...internalError,
+      badRequestError = {
+        ...badRequestError,
         detail: message,
       };
     }
     if (typeof message === 'object') {
-      internalError = {
-        ...internalError,
+      badRequestError = {
+        ...badRequestError,
         ...message,
       };
     }
-    super(internalError);
+    super(badRequestError);
   }
 }
 

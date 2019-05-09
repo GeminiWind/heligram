@@ -25,7 +25,7 @@ app.use((e, _, res, next) => {
       && e.status === 400
       && e.message.includes('JSON')
   ) {
-    // massage error to JSON API error
+    // message error to JSON API error
     const malformedError = new MalformedError().toJSON();
 
     res.json(

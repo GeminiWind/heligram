@@ -8,7 +8,7 @@ export default req => Promise.resolve(req)
   .then(getUserByEmail)
   .then(verifyPassword)
   .then(generateToken)
-  .then(returnResponse)
+  .then(returnResponse);
 
 function validateRequest(req) {
   const { schemaValidator } = req;
@@ -39,7 +39,7 @@ async function getUserByEmail(req) {
   });
 
   if (!user) {
-    throw NotFoundError(`User with ${email} was not found`);
+    throw new NotFoundError(`User with ${email} was not found`);
   }
 
   return {
