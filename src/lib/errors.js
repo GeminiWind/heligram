@@ -84,9 +84,22 @@ class MalformedError extends JsonApiError {
   }
 }
 
+class TimeoutError extends JsonApiError {
+  constructor() {
+    const timeoutError = {
+      title: 'TimeoutError',
+      code: 'TimeoutError',
+      status: 408,
+      detail: 'Request Timeout.',
+    };
+    super(timeoutError);
+  }
+}
+
 export {
   InternalError,
   NotFoundError,
   BadRequestError,
   MalformedError,
+  TimeoutError,
 };

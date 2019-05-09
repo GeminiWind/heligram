@@ -7,44 +7,30 @@ import {
   schemaValidator,
 } from './lib';
 import { login } from './func/auth';
-import { MalformedError } from './lib/errors';
-
+import { malformedErrorHandler } from './lib/middlewares';
 
 const app = express();
 
+// parse JSON body
 app.use(bodyParser.json());
+// handling malformed JSON error
+app.use(malformedErrorHandler);
 
-const defaultResponseHeader = {
-  Accept: 'application/json',
-  'Content-Type': 'application/json',
-};
-
-app.use((e, _, res, next) => {
-  // if error is belong to malformed JSON
-  if (e instanceof SyntaxError
-      && e.status === 400
-      && e.message.includes('JSON')
-  ) {
-    // message error to JSON API error
-    const malformedError = new MalformedError().toJSON();
-
-    res.json(
-      {
-        errors: [malformedError],
-      },
-      defaultResponseHeader,
-      e.status,
-    );
-  }
+// decorate utils to event
+app.use((req, _, next) => {
+  logger.info('STARTING REQUEST \n%s', JSON.stringify(req.body, null, 2));
+  req.storageLibrary = storageLibrary;
+  req.instrumentation = logger;
+  req.schemaValidator = schemaValidator;
 
   next();
 });
 
-app.use((req, _, next) => {
-  // attach storage library and instrumentation to request\
-  req.storageLibrary = storageLibrary;
-  req.instrumentation = logger;
-  req.schemaValidator = schemaValidator;
+app.use((_, res, next) => {
+  res.on('finish', () => {
+    // TODO: catch up response body to log in here
+    logger.info('END REQUEST');
+  });
 
   next();
 });
