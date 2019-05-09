@@ -1,53 +1,29 @@
 import moment from 'moment';
 import path from 'path';
-import winston from 'winston';
+import { format, transports, createLogger } from 'winston';
 
-const logger = winston.createLogger({
+const logger = createLogger({
+  format: format.combine(
+    format.splat(),
+    format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss',
+    }),
+    format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`),
+  ),
   transports: [
-    new winston.transports.Console({
-      level: 'info',
-      name: 'info-console',
-      timestamp: () => moment(),
-      formatter: options => `[${options.timestamp().format('YYYY-MM-DD HH-mm-ss')}] : ${options.message || ''}`,
+    new transports.Console({
+      format: format.combine(
+        format.colorize(),
+        format.timestamp({
+          format: 'YYYY-MM-DD HH:mm:ss',
+        }),
+        format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`),
+      ),
     }),
-    new winston.transports.File({
-      level: 'info',
-      name: 'info-file',
-      filename: path.resolve(__dirname, '../..', 'log', `info-${moment().format('YYYYMMDD')}.log`),
-      timestamp: () => moment(),
-      formatter: options => `[${options.timestamp().format('YYYY-MM-DD HH-mm-ss')}] : ${options.message || ''}`,
-      json: false,
-    }),
-    new winston.transports.Console({
-      level: 'error',
-      name: 'error-console',
-      timestamp: () => moment(),
-      formatter: options => `[${options.timestamp().format('YYYY-MM-DD HH-mm-ss')}] : ${options.message || ''}`,
-    }),
-    new winston.transports.File({
-      level: 'error',
-      name: 'error-file',
-      filename: path.resolve(__dirname, '../..', 'log', `errors-${moment().format('YYYYMMDD')}.log`),
-      timestamp: () => moment(),
-      formatter: options => `[${options.timestamp().format('YYYY-MM-DD HH-mm-ss')}] : ${options.message || ''}`,
-      json: false,
-    }),
-    new winston.transports.File({
-      level: 'request',
-      name: 'request-log',
-      filename: path.resolve(__dirname, '../..', 'log', `requests-${moment().format('YYYYMMDD')}.log`),
-      timestamp: () => moment(),
-      formatter: options => `[${options.timestamp().format('YYYY-MM-DD HH-mm-ss')}] : ${options.message || ''}`,
-      json: false,
+    new transports.File({
+      filename: path.resolve(__dirname, '../..', 'log', `${moment().format('YYYY-MM-DD')}.log`),
     }),
   ],
 });
 
-let defaultLogger = console;
-
-
-if (process.env.NODE_ENV === 'production') {
-  defaultLogger = logger;
-}
-
-export default defaultLogger;
+export default logger;

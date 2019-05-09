@@ -11,11 +11,12 @@ export default req => Promise.resolve(req)
   .then(returnResponse);
 
 function validateRequest(req) {
-  const { schemaValidator } = req;
-
+  const { schemaValidator, instrumentation } = req;
   const isValid = schemaValidator.validate('https://heligram.com/login-user+v1.json', req.body.data);
 
   if (!isValid) {
+    instrumentation.error('Error in validate request %s', JSON.stringify(schemaValidator.errors, null, 2));
+
     throw new BadRequestError({
       source: schemaValidator.errors,
     });
@@ -26,6 +27,7 @@ function validateRequest(req) {
 
 async function getUserByEmail(req) {
   const {
+    instrumentation,
     storageLibrary,
     body: {
       data: {
@@ -39,6 +41,8 @@ async function getUserByEmail(req) {
   });
 
   if (!user) {
+    instrumentation.error(`User with ${email} was not found`);
+
     throw new NotFoundError(`User with ${email} was not found`);
   }
 
@@ -50,6 +54,7 @@ async function getUserByEmail(req) {
 
 function verifyPassword(req) {
   const {
+    instrumentation,
     user: {
       Content: {
         password,
@@ -57,11 +62,13 @@ function verifyPassword(req) {
     },
   } = req;
 
-  if (isValidPassword(req.body.data.password, password)) {
-    return req;
+  if (!isValidPassword(req.body.data.password, password)) {
+    instrumentation.error('Password does not match');
+
+    throw new BadRequestError('Password does not match.');
   }
 
-  throw new BadRequestError('Password does not match.');
+  return req;
 }
 
 function generateToken(req) {
