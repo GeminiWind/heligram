@@ -6,6 +6,7 @@ import {
   logger,
   wrapperController,
   schemaValidator,
+  loadEnv,
   jwtPassport,
 } from './lib';
 import { UnauthorizedError } from './lib/errors';
@@ -13,6 +14,7 @@ import { malformedErrorHandler } from './lib/middlewares';
 import routes from './routes';
 
 const app = express();
+loadEnv();
 
 // parse JSON body
 app.use(bodyParser.json());
@@ -43,7 +45,7 @@ app.use((_, res, next) => {
 app.use(passport.initialize());
 jwtPassport(passport);
 
-const unaunthorizedErrorHandler = (req, res, next) => {
+const unauthorizedErrorHandler = (req, res, next) => {
   passport.authenticate('jwt', { session: false }, (err, user) => {
     if (err || !user) {
       const unauthorizedError = new UnauthorizedError().toJSON();
@@ -60,7 +62,7 @@ routes.map((route) => {
   app[route.method.toLowerCase()](
     route.path,
     route.middlewares.concat(
-      route.meta.isProtected ? [unaunthorizedErrorHandler] : [],
+      route.meta.isProtected ? [unauthorizedErrorHandler] : [],
     ),
     async (req, res) => await wrapperController(req, res)(route.controller),
   );

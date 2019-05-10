@@ -19,4 +19,4 @@ log/*
 # Ignore related-coverage
 .nyc_output
 coverage
-.env
+.env.production
