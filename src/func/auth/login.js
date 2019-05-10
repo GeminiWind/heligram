@@ -80,7 +80,7 @@ function generateToken(req) {
 
   return {
     req,
-    token: `JWT ${token}`,
+    token: `Bearer ${token}`,
     expirestAt,
   };
 }
