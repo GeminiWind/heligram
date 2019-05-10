@@ -1,3 +1,4 @@
+import { InternalError } from './errors';
 import JsonApiError from './jsonApiError';
 
 const wrapperController = (req, res) => async (fn) => {
@@ -10,25 +11,24 @@ const wrapperController = (req, res) => async (fn) => {
     const result = await fn(req);
 
     if (result) {
-      res.json(
-        result.body,
-        {
-          ...defaultHeader,
-          ...(result.headers ? result.headers : {}),
-        },
-        result.statusCode,
-      );
+      res.send(result.statusCode).json(result.body);
     }
   } catch (error) {
     if (error instanceof JsonApiError) {
       const e = error.toJSON();
 
-      res.json(
+      res.set(defaultHeader).status(e.status).json(
         {
           errors: [e],
         },
-        defaultHeader,
-        e.status,
+      );
+    } else {
+      // if unknown error was thrown
+      // then message it to InternalError
+      res.set(defaultHeader).status(500).json(
+        {
+          errors: [new InternalError().toJSON()],
+        },
       );
     }
   }

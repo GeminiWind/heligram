@@ -96,10 +96,23 @@ class TimeoutError extends JsonApiError {
   }
 }
 
+class UnauthorizedError extends JsonApiError {
+  constructor() {
+    const unauthorizedError = {
+      title: 'UnauthorizedError',
+      code: 'UnauthorizedError',
+      status: 401,
+      detail: 'Unauthorized Error.',
+    };
+    super(unauthorizedError);
+  }
+}
+
 export {
   InternalError,
   NotFoundError,
   BadRequestError,
   MalformedError,
   TimeoutError,
+  UnauthorizedError,
 };
