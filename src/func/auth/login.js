@@ -76,12 +76,12 @@ function generateToken(req) {
   const token = jwt.sign(req.user, process.env.APP_KEY, {
     expiresIn, // in seconds
   });
-  const expirestAt = moment().add(30, 'm').unix();
+  const expireAt = moment().add(30, 'm').unix();
 
   return {
     req,
     token: `Bearer ${token}`,
-    expirestAt,
+    expireAt,
   };
 }
 
@@ -94,7 +94,7 @@ function returnResponse(req) {
         attributes: {
           email: req.body.email,
           token: req.token,
-          expirestAt: req.expirestAt,
+          expireAt: req.expireAt,
         },
       },
     },
