@@ -7,11 +7,11 @@ services:
     ports:
       - "27017:27017"
   app:
-    build:
-      context: .Docker/app
-    restart: always
+    image: node:8.16.0-jessie
     volumes:
       - ./:/usr/src/app
+    command: bash -c "npm install -g yarn && cd /usr/src/app && yarn start"
+    restart: always
     links:
       - database:database
     ports:

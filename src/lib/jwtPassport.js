@@ -10,11 +10,11 @@ export default function jwtPassport(passport) {
   passport.use(new JwtStrategy(options, (jwtPayload, done) => {
     const {
       _doc: {
-        path,
+        Path,
       },
     } = jwtPayload;
     storageLibrary.findOne({
-      Path: path,
+      Path,
     }).then((user) => {
       if (user) done(null, user);
       done(null, false);
