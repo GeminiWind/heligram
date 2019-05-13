@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
-import { isValidPassword } from './helper';
+import { isMatchingWithHashedPassword } from './helper';
 import { NotFoundError, BadRequestError } from '../../lib/errors';
 
 export default req => Promise.resolve(req)
@@ -34,11 +34,11 @@ async function getUserByEmail(req) {
         email,
       },
     },
-  } = req.body;
+  } = req;
 
   const user = await storageLibrary.findOne({
     Path: `user/${email}`,
-  });
+  }).lean();
 
   if (!user) {
     instrumentation.error(`User with ${email} was not found`);
@@ -62,7 +62,7 @@ function verifyPassword(req) {
     },
   } = req;
 
-  if (!isValidPassword(req.body.data.password, password)) {
+  if (!isMatchingWithHashedPassword(req.body.data.password, password)) {
     instrumentation.error('Password does not match');
 
     throw new BadRequestError('Password does not match.');
@@ -79,7 +79,7 @@ function generateToken(req) {
   const expireAt = moment().add(30, 'm').unix();
 
   return {
-    req,
+    ...req,
     token: `Bearer ${token}`,
     expireAt,
   };
@@ -92,7 +92,7 @@ function returnResponse(req) {
       data: {
         type: 'session',
         attributes: {
-          email: req.body.email,
+          email: req.body.data.email,
           token: req.token,
           expireAt: req.expireAt,
         },

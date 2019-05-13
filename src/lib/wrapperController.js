@@ -11,7 +11,7 @@ const wrapperController = (req, res) => async (fn) => {
     const result = await fn(req);
 
     if (result) {
-      res.send(result.statusCode).json(result.body);
+      res.json(result.body).sendStatus(result.statusCode);
     }
   } catch (error) {
     if (error instanceof JsonApiError) {
@@ -25,7 +25,7 @@ const wrapperController = (req, res) => async (fn) => {
     } else {
       // if unknown error was thrown
       // then message it to InternalError
-      res.set(defaultHeader).status(500).json(
+      res.set(defaultHeader).sendStatus(500).json(
         {
           errors: [new InternalError().toJSON()],
         },

@@ -15,13 +15,13 @@ const storageLibrary = new Schema({
   Content: {
     type: Object,
   },
-}, {
-  _id: false,
 });
 
 
-storageLibrary.pre('save', (next) => {
+storageLibrary.pre('save', function save(next) {
   const now = moment().unix();
+
+  this.Attributes = this.Attributes ? this.Attributes : {};
 
   this.Attributes.updatedAt = now;
 
