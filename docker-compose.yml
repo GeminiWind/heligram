@@ -10,7 +10,8 @@ services:
     image: node:8.16.0-jessie
     volumes:
       - ./:/usr/src/app
-    command: bash -c "npm install -g yarn && cd /usr/src/app && yarn start"
+      - /usr/src/app/node_modules/ # make node_module empty in container
+    command: bash -c "npm install -g yarn && cd /usr/src/app && yarn && yarn start"
     restart: always
     links:
       - database:database

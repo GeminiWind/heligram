@@ -1,3 +1,3 @@
-import isValidPassword from './isValidPassword';
+import isMatchingWithHashedPassword from './isMatchingWithHashedPassword';
 
-export { isValidPassword };
+export { isMatchingWithHashedPassword };

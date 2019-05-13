@@ -1,10 +1,19 @@
-import { login } from './func/auth';
+import { login, register } from './func/auth';
 
 const routes = [
   {
     path: '/login',
     method: 'POST',
     controller: login,
+    middlewares: [],
+    meta: {
+      isProtected: false,
+    },
+  },
+  {
+    path: '/user/create',
+    method: 'POST',
+    controller: register,
     middlewares: [],
     meta: {
       isProtected: false,
