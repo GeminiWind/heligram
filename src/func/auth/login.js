@@ -10,7 +10,7 @@ export default req => Promise.resolve(req)
   .then(generateToken)
   .then(returnResponse);
 
-function validateRequest(req) {
+export function validateRequest(req) {
   const { schemaValidator, instrumentation } = req;
   const isValid = schemaValidator.validate('https://heligram.com/login-user+v1.json', req.body.data);
 
@@ -25,7 +25,7 @@ function validateRequest(req) {
   return req;
 }
 
-async function getUserByEmail(req) {
+export async function getUserByEmail(req) {
   const {
     instrumentation,
     storageLibrary,
@@ -52,7 +52,7 @@ async function getUserByEmail(req) {
   };
 }
 
-function verifyPassword(req) {
+export function verifyPassword(req) {
   const {
     instrumentation,
     user: {
@@ -71,7 +71,7 @@ function verifyPassword(req) {
   return req;
 }
 
-function generateToken(req) {
+export function generateToken(req) {
   const expiresIn = parseInt('1800', 10); // ~30mins
   const token = jwt.sign(req.user, process.env.APP_KEY, {
     expiresIn, // in seconds
@@ -85,7 +85,7 @@ function generateToken(req) {
   };
 }
 
-function returnResponse(req) {
+export function returnResponse(req) {
   return {
     statusCode: 200,
     body: {

@@ -559,7 +559,7 @@
     "@babel/helper-regex" "^7.4.4"
     regexpu-core "^4.5.4"
 
-"@babel/polyfill@^7.0.0":
+"@babel/polyfill@^7.0.0", "@babel/polyfill@^7.4.4":
   version "7.4.4"
   resolved "https://registry.yarnpkg.com/@babel/polyfill/-/polyfill-7.4.4.tgz#78801cf3dbe657844eeabf31c1cae3828051e893"
   integrity sha512-WlthFLfhQQhh+A2Gn5NSFl0Huxz36x86Jn+E9OW7ibK8edKPq+KLy4apM1yDpQ8kJOVi1OVjpP4vSDLdrI04dg==
@@ -1990,6 +1990,11 @@ eslint-plugin-import@^2.17.2:
     minimatch "^3.0.4"
     read-pkg-up "^2.0.0"
     resolve "^1.10.0"
+
+eslint-plugin-jest@^22.5.1:
+  version "22.5.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-22.5.1.tgz#a31dfe9f9513c6af7c17ece4c65535a1370f060b"
+  integrity sha512-c3WjZR/HBoi4GedJRwo2OGHa8Pzo1EbSVwQ2HFzJ+4t2OoYM7Alx646EH/aaxZ+9eGcPiq0FT0UGkRuFFx2FHg==
 
 eslint-restricted-globals@^0.1.1:
   version "0.1.1"
