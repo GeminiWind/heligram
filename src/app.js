@@ -46,7 +46,7 @@ app.use(passport.initialize());
 jwtPassport(passport);
 
 const unauthorizedErrorHandler = (req, res, next) => {
-  passport.authenticate('jwt', { session: false }, (err, user) => {
+  passport.authenticate('jwt', { session: false, failWithError: true }, (err, user) => {
     if (err || !user) {
       const unauthorizedError = new UnauthorizedError().toJSON();
 
@@ -54,16 +54,21 @@ const unauthorizedErrorHandler = (req, res, next) => {
         { errors: [unauthorizedError] },
       );
     }
+
+    req.user = user;
+    next();
   })(req, res, next);
 };
 
 // initialize routes
 routes.map((route) => {
+  if (route.meta.isProtected) {
+    route.middlewares.unshift(unauthorizedErrorHandler);
+  }
+
   app[route.method.toLowerCase()](
     route.path,
-    route.middlewares.concat(
-      route.meta.isProtected ? [unauthorizedErrorHandler] : [],
-    ),
+    route.middlewares,
     async (req, res) => await wrapperController(req, res)(route.controller),
   );
 });

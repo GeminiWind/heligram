@@ -64,6 +64,7 @@ async function createUser(req) {
     Content: {
       email: data.email,
       password: hashedPassword,
+      scopes: 'user:profile create:chat read:chat',
     },
   };
 
