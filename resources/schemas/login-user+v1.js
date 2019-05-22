@@ -15,6 +15,19 @@ export default {
       description: 'User password',
       minLength: 6,
     },
+    scopes: {
+      oneOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'array',
+          items: {
+            type: 'string',
+          },
+        },
+      ],
+    },
   },
-  required: ['email', 'password'],
+  required: ['email', 'password', 'scopes'],
 };

@@ -19,6 +19,7 @@ describe('Login Controller', () => {
         data: {
           email: 'validEmail@example.com',
           password: 'validPassword',
+          scopes: 'user:profile create:chat read:chat',
         },
       },
       instrumentation: {
@@ -136,11 +137,8 @@ describe('Login Controller', () => {
         },
       },
       user: {
-        Path: 'user/validEmail@example.com',
-        Content: {
-          email: 'validEmail@example.com',
-          password: 'hashedPassword',
-        },
+        email: 'validEmail@example.com',
+        password: 'hashedPassword',
       },
       instrumentation: {
         error: jest.fn(),
@@ -162,11 +160,8 @@ describe('Login Controller', () => {
         },
       },
       user: {
-        Path: 'user/validEmail@example.com',
-        Content: {
-          email: 'validEmail@example.com',
-          password: 'notCorrect',
-        },
+        email: 'validEmail@example.com',
+        password: 'notCorrect',
       },
       instrumentation: {
         error: jest.fn(),
@@ -191,14 +186,13 @@ describe('Login Controller', () => {
         data: {
           email: 'validEmail@example.com',
           password: 'validPassword',
+          scopes: 'user:profile create:chat read:chat',
         },
       },
       user: {
-        Path: 'user/validEmail@example.com',
-        Content: {
-          email: 'validEmail@example.com',
-          password: 'notCorrect',
-        },
+        email: 'validEmail@example.com',
+        password: 'notCorrect',
+        scopes: 'user:profile create:chat read:chat',
       },
     };
 
@@ -206,6 +200,34 @@ describe('Login Controller', () => {
 
     expect(state).toHaveProperty('token');
     expect(state).toHaveProperty('expireAt');
+  });
+
+  it('can generate token for specified user', () => {
+    const request = {
+      body: {
+        data: {
+          email: 'validEmail@example.com',
+          password: 'validPassword',
+          scopes: 'user:profile create:chat read:chat delete:user',
+        },
+      },
+      user: {
+        email: 'validEmail@example.com',
+        password: 'notCorrect',
+        scopes: 'user:profile create:chat read:chat',
+      },
+    };
+
+    let error;
+
+    try {
+      generateToken(request);
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error).toBeDefined();
+    expect(error).toBeInstanceOf(BadRequestError);
   });
 
   it('can return response correctly', () => {
@@ -234,6 +256,7 @@ describe('Login Controller', () => {
         data: {
           email: 'validEmail@example.com',
           password: 'validPassword',
+          scopes: 'user:profile create:chat read:chat',
         },
       },
       instrumentation: {

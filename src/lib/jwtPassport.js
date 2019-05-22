@@ -9,15 +9,25 @@ export default function jwtPassport(passport) {
 
   passport.use(new JwtStrategy(options, (jwtPayload, done) => {
     const {
-      _doc: {
-        Path,
-      },
+      userEmail,
+      scopes,
     } = jwtPayload;
+
     storageLibrary.findOne({
-      Path,
-    }).then((user) => {
-      if (user) done(null, user);
-      done(null, false);
+      Path: `user/${userEmail}`,
+    }).then((record) => {
+      if (record) {
+        const {
+          Content: {
+            password,
+            ...userAttributesWithoutPassword
+          },
+        } = record;
+        done(null, {
+          ...userAttributesWithoutPassword,
+          scopes,
+        });
+      } else done(null, false);
     }).catch(error => done(error, false));
   }));
 }

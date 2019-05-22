@@ -1,4 +1,5 @@
 import { login, register } from './func/auth';
+import { jwtAuthz } from './lib/middlewares';
 
 const routes = [
   {
@@ -22,11 +23,11 @@ const routes = [
   {
     path: '/private',
     method: 'GET',
-    controller: () => ({
+    controller: req => ({
       statusCode: 200,
-      body: {},
+      body: req.user,
     }),
-    middlewares: [],
+    middlewares: [(req, res, next) => jwtAuthz(req, res, next)(['user:profile'])],
     meta: {
       isProtected: true,
     },

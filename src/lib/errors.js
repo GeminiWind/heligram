@@ -108,6 +108,18 @@ class UnauthorizedError extends JsonApiError {
   }
 }
 
+class ForbiddenError extends JsonApiError {
+  constructor() {
+    const forbiddenError = {
+      title: 'ForbiddenError',
+      code: 'ForbiddenError',
+      status: 403,
+      detail: 'ForbiddenError.',
+    };
+    super(forbiddenError);
+  }
+}
+
 export {
   InternalError,
   NotFoundError,
@@ -115,4 +127,5 @@ export {
   MalformedError,
   TimeoutError,
   UnauthorizedError,
+  ForbiddenError,
 };

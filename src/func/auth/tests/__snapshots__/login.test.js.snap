@@ -2,11 +2,8 @@
 
 exports[`Login Controller can get user by their email 1`] = `
 Object {
-  "Content": Object {
-    "email": "validEmail@example.com",
-    "password": "validPassword",
-  },
-  "Path": "user/validEmail@example.com",
+  "email": "validEmail@example.com",
+  "password": "validPassword",
 }
 `;
 
@@ -15,7 +12,6 @@ Object {
   "body": Object {
     "data": Object {
       "attributes": Object {
-        "email": "validEmail@example.com",
         "expireAt": "123456",
         "token": "Berear mockToken",
       },
