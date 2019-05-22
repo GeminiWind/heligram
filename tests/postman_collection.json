@@ -1,0 +1,363 @@
+{
+	"info": {
+		"_postman_id": "5fcfa261-ab05-47be-9b06-67df3a470d66",
+		"name": "Heligram",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "1.Register",
+					"item": [
+						{
+							"name": "200 Success",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "733e122e-4dac-4cd6-9e7d-fce341b9768a",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.equal(200);",
+											"});",
+											"",
+											"pm.test(\"Response is correct\", function () {",
+											"    const response = pm.response.json();",
+											"    ",
+											"    pm.expect(response.data.type).to.equal('user');",
+											"    pm.expect(response.data.attributes).to.have.property('email');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"data\": {\n\t\t\"email\": \"{{email}}\",\n\t\t\"password\": \"{{password}}\"\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{endpoint}}/user/create",
+									"host": [
+										"{{endpoint}}"
+									],
+									"path": [
+										"user",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "400 User Exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "733e122e-4dac-4cd6-9e7d-fce341b9768a",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+											"});",
+											"",
+											"pm.test(\"Error is formated correctly\", function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect([response.error]).to.be.an('array').that.is.not.empty;",
+											"    pm.expect(response.errors[0]).to.have.property('code', 'BadRequestError');",
+											"    pm.expect(response.errors[0]).to.have.property('title', 'BadRequestError');",
+											"    pm.expect(response.errors[0]).to.have.property('detail');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"data\": {\n\t\t\"email\": \"{{email}}\",\n\t\t\"password\": \"{{password}}\"\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{endpoint}}/user/create",
+									"host": [
+										"{{endpoint}}"
+									],
+									"path": [
+										"user",
+										"create"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "2.Login",
+					"item": [
+						{
+							"name": "400 Bad Request",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "733e122e-4dac-4cd6-9e7d-fce341b9768a",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+											"});",
+											"",
+											"pm.test(\"Error is formated correctly\", function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect([response.error]).to.be.an('array').that.is.not.empty;",
+											"    pm.expect(response.errors[0]).to.have.property('code', 'BadRequestError');",
+											"    pm.expect(response.errors[0]).to.have.property('title', 'BadRequestError');",
+											"    pm.expect(response.errors[0]).to.have.property('detail');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"data\": {\n\t\t\"email\": \"hai\",\n\t\t\"password\": \"123\"\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{endpoint}}/login",
+									"host": [
+										"{{endpoint}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "400 Bad Request - Mismatched Password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "733e122e-4dac-4cd6-9e7d-fce341b9768a",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+											"});",
+											"",
+											"pm.test(\"Error is formated correctly\", function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect([response.error]).to.be.an('array').that.is.not.empty;",
+											"    pm.expect(response.errors[0]).to.have.property('code', 'BadRequestError');",
+											"    pm.expect(response.errors[0]).to.have.property('title', 'BadRequestError');",
+											"    pm.expect(response.errors[0]).to.have.property('detail');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"data\": {\n\t\t\"email\": \"{{email}}\",\n\t\t\"password\": \"invalidPassword\",\n\t\t\"scopes\": \"user:profile\"\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{endpoint}}/login",
+									"host": [
+										"{{endpoint}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "200 Success",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e444f097-d678-4050-bba5-ea399b40d363",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+											"});",
+											"",
+											"pm.test(\"Response is correct\", function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response.data.attributes).to.have.property('token');",
+											"    pm.expect(response.data.attributes).to.have.property('expireAt');",
+											"    ",
+											"    ",
+											"    pm.environment.set(\"token\", response.data.attributes.token);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"data\": {\n\t\t\"email\": \"{{email}}\",\n\t\t\"password\": \"{{password}}\",\n\t\t\"scopes\": \"user:profile create:chat read:chat\"\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{endpoint}}/login",
+									"host": [
+										"{{endpoint}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "200 Successs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e444f097-d678-4050-bba5-ea399b40d363",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									"",
+									"pm.test(\"Response is correct\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.attributes).to.have.property('scopes');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{endpoint}}/user",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

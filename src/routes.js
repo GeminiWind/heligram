@@ -21,11 +21,18 @@ const routes = [
     },
   },
   {
-    path: '/private',
+    path: '/user',
     method: 'GET',
     controller: req => ({
       statusCode: 200,
-      body: req.user,
+      body: {
+        data: {
+          type: 'user',
+          attributes: {
+            ...req.user,
+          },
+        },
+      },
     }),
     middlewares: [(req, res, next) => jwtAuthz(req, res, next)(['user:profile'])],
     meta: {
