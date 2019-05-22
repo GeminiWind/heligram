@@ -4,13 +4,7 @@ import { InternalError, BadRequestError } from '../../lib/errors';
 export default req => Promise.resolve(req)
   .then(validateRequest)
   .then(createChat)
-  .then(returnResponse)
-  .catch((error) => {
-    req.instrumentation.error('Encounter error when creating a new chat', error);
-
-    throw new InternalError('Encounter error when creating a new chat');
-  });
-
+  .then(returnResponse);
 
 export function validateRequest(req) {
   const { schemaValidator, instrumentation } = req;

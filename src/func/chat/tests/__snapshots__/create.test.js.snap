@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Create Chat Controller can return response correctly 1`] = `
+Object {
+  "body": Object {
+    "data": Object {
+      "attributes": Object {
+        "createdBy": "haidv7@fsoft.com.vn",
+        "participants": Array [
+          "haidv7@fsoft.com.vn",
+          "fake@gmail.com",
+        ],
+      },
+      "id": "fake-id",
+      "relationships": Object {
+        "messages": Object {
+          "data": Array [
+            Object {
+              "attributes": Object {
+                "createdBy": "haidv7@fsoft.com.vn",
+                "message": "Hello World",
+              },
+              "type": "message",
+            },
+          ],
+        },
+      },
+      "type": "chat",
+    },
+  },
+  "statusCode": 201,
+}
+`;
+
+exports[`Create Chat Controller throw 'BadRequestError'  in case that request does not matches with schema 1`] = `[BadRequestError: BadRequestError BadRequestError]`;
+
+exports[`Create Chat Controller throw 'InternalError'  in case that error in saving chat into storage 1`] = `[InternalError: InternalError Error in creating chat in storage.]`;
