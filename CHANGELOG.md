@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- Added initial Postman collection to test integration.
 - Added `scopes` in JWT claims to handle API Authorization.
 - Added `ForbiddenError` to handle API Authorization Error.
 
