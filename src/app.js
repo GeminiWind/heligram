@@ -1,6 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import passport from 'passport';
+import http from 'http';
+import socketIo from 'socket.io';
 import {
   storageLibrary,
   logger,
@@ -15,6 +18,9 @@ import routes from './routes';
 
 const app = express();
 loadEnv();
+
+// enable CORS
+app.use(cors());
 
 // parse JSON body
 app.use(bodyParser.json());
@@ -73,5 +79,36 @@ routes.map((route) => {
   );
 });
 
+const server = http.Server(app);
+const io = socketIo(server);
 
-export default app;
+global.socketIOClient = io;
+global.currentActiveUser = {};
+
+io.on('connection', (socket) => {
+  socket.on('user:login', (user) => {
+    global.currentActiveUser[user.email] = {
+      socketId: socket.id,
+      ...user,
+    };
+
+    socket.emit('active-users:list', global.currentActiveUser);
+  });
+
+  socket.on('disconnect', () => {
+    const key = Object.keys(global.currentActiveUser)
+      .find(userEmail => global.currentActiveUser[userEmail].socketId === socket.id);
+
+    delete global.currentActiveUser[key];
+
+    socket.emit('active-users:list', global.currentActiveUser);
+  });
+
+  socket.on('user:logout', (user) => {
+    delete global.currentActiveUser[user.email];
+
+    socket.emit('active-users:list', global.currentActiveUser);
+  });
+});
+
+export default server;
