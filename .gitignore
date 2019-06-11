@@ -20,3 +20,5 @@ log/*
 .nyc_output
 coverage
 .env.production
+
+nginx
