@@ -4,13 +4,6 @@ import { intersection } from 'lodash';
 import { isMatchingWithHashedPassword } from './helper';
 import { NotFoundError, BadRequestError } from '../../lib/errors';
 
-export default req => Promise.resolve(req)
-  .then(validateRequest)
-  .then(getUserByEmail)
-  .then(verifyPassword)
-  .then(generateToken)
-  .then(returnResponse);
-
 export function validateRequest(req) {
   const { schemaValidator, instrumentation } = req;
   const isValid = schemaValidator.validate('https://heligram.com/login-user+v1.json', req.body);
@@ -124,3 +117,10 @@ export function returnResponse(req) {
     },
   };
 }
+
+export default req => Promise.resolve(req)
+  .then(validateRequest)
+  .then(getUserByEmail)
+  .then(verifyPassword)
+  .then(generateToken)
+  .then(returnResponse);

@@ -1,12 +1,6 @@
 import bcrypt from 'bcrypt';
 import { BadRequestError, InternalError } from '../../lib/errors';
 
-export default req => Promise.resolve(req)
-  .then(validateRequest)
-  .then(isUserEmailExist)
-  .then(createUser)
-  .then(returnResponse);
-
 function validateRequest(req) {
   const { schemaValidator, instrumentation } = req;
   const isValid = schemaValidator.validate('https://heligram.com/create-user+v1.json', req.body);
@@ -95,3 +89,9 @@ function returnResponse(req) {
     },
   };
 }
+
+export default req => Promise.resolve(req)
+  .then(validateRequest)
+  .then(isUserEmailExist)
+  .then(createUser)
+  .then(returnResponse);
