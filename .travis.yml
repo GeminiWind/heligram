@@ -1,0 +1,13 @@
+dist: trusty
+sudo: false
+language: node_js
+node_js: '8.10'
+cache: yarn
+install:
+- yarn
+jobs:
+  include:
+    - stage: lint
+      script: yarn lint
+    - stage: unit test
+      script: yarn test:unit
