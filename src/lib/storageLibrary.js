@@ -14,6 +14,11 @@ const storageLibrary = new Schema({
   },
   Content: {
     type: Object,
+    required: true,
+  },
+  Type: {
+    type: String,
+    required: true,
   },
 });
 

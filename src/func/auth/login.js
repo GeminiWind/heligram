@@ -13,7 +13,7 @@ export default req => Promise.resolve(req)
 
 export function validateRequest(req) {
   const { schemaValidator, instrumentation } = req;
-  const isValid = schemaValidator.validate('https://heligram.com/login-user+v1.json', req.body.data);
+  const isValid = schemaValidator.validate('https://heligram.com/login-user+v1.json', req.body);
 
   if (!isValid) {
     instrumentation.error('Error in validate request %s', JSON.stringify(schemaValidator.errors, null, 2));
@@ -32,7 +32,9 @@ export async function getUserByEmail(req) {
     storageLibrary,
     body: {
       data: {
-        email,
+        attributes: {
+          email,
+        },
       },
     },
   } = req;
@@ -59,7 +61,7 @@ export function verifyPassword(req) {
     user,
   } = req;
 
-  if (!isMatchingWithHashedPassword(req.body.data.password, user.password)) {
+  if (!isMatchingWithHashedPassword(req.body.data.attributes.password, user.password)) {
     instrumentation.error('Password does not match');
 
     throw new BadRequestError('Password does not match.');
@@ -71,7 +73,7 @@ export function verifyPassword(req) {
 export function generateToken(req) {
   const {
     user,
-    body: { data: { scopes } },
+    body: { data: { attributes: { scopes } } },
   } = req;
 
   // validate requested scopes
@@ -113,9 +115,9 @@ export function returnResponse(req) {
     statusCode: 200,
     body: {
       data: {
-        type: 'session',
+        type: 'tokens',
         attributes: {
-          token: req.token,
+          accessToken: req.token,
           expireAt: req.expireAt,
         },
       },

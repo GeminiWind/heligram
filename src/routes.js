@@ -3,7 +3,7 @@ import { jwtAuthz } from './lib/middlewares';
 
 const routes = [
   {
-    path: '/login',
+    path: '/tokens',
     method: 'POST',
     controller: login,
     middlewares: [],
@@ -12,7 +12,7 @@ const routes = [
     },
   },
   {
-    path: '/user/create',
+    path: '/users',
     method: 'POST',
     controller: register,
     middlewares: [],
@@ -21,13 +21,13 @@ const routes = [
     },
   },
   {
-    path: '/user',
+    path: '/users',
     method: 'GET',
     controller: req => ({
       statusCode: 200,
       body: {
         data: {
-          type: 'user',
+          type: 'users',
           attributes: {
             ...req.user,
           },

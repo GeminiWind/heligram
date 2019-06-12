@@ -9,7 +9,7 @@ export default req => Promise.resolve(req)
 
 function validateRequest(req) {
   const { schemaValidator, instrumentation } = req;
-  const isValid = schemaValidator.validate('https://heligram.com/create-user+v1.json', req.body.data);
+  const isValid = schemaValidator.validate('https://heligram.com/create-user+v1.json', req.body);
 
   if (!isValid) {
     instrumentation.error('Error in validate request %s', JSON.stringify(schemaValidator.errors, null, 2));
@@ -28,7 +28,9 @@ async function isUserEmailExist(req) {
     storageLibrary,
     body: {
       data: {
-        email,
+        attributes: {
+          email,
+        },
       },
     },
   } = req;
@@ -60,12 +62,13 @@ async function createUser(req) {
   const hashedPassword = bcrypt.hashSync(data.password, salt);
 
   const record = {
-    Path: `user/${data.email}`,
+    Path: `user/${data.attributes.email}`,
     Content: {
-      email: data.email,
+      email: data.attributes.email,
       password: hashedPassword,
       scopes: 'user:profile create:chat read:chat',
     },
+    Type: 'users',
   };
 
   try {
@@ -84,10 +87,9 @@ function returnResponse(req) {
     statusCode: 201,
     body: {
       data: {
-        type: 'user',
+        type: 'users',
         attributes: {
-          email: req.body.data.email,
-          password: req.body.data.password,
+          email: req.body.data.attributes.email,
         },
       },
     },

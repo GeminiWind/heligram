@@ -12,17 +12,15 @@ Object {
   "body": Object {
     "data": Object {
       "attributes": Object {
+        "accessToken": "Berear mockToken",
         "expireAt": "123456",
-        "token": "Berear mockToken",
       },
-      "type": "session",
+      "type": "tokens",
     },
   },
   "statusCode": 200,
 }
 `;
-
-exports[`Login Controller can verify password if password is not correct 1`] = `[BadRequestError: BadRequestError Password does not match.]`;
 
 exports[`Login Controller throw 'BadRequestError'  in case that request does not matches with schema 1`] = `[BadRequestError: BadRequestError BadRequestError]`;
 
