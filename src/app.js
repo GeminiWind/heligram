@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import passport from 'passport';
 import {
   storageLibrary,
@@ -14,12 +15,13 @@ import { malformedErrorHandler } from './lib/middlewares';
 import routes from './routes';
 
 const app = express();
-loadEnv();
 
-// parse JSON body
-app.use(bodyParser.json());
-// handling malformed JSON error
-app.use(malformedErrorHandler);
+// load environments from config file
+loadEnv();
+// configure CORS
+app.use(cors());
+// manipulate JSON
+app.use([bodyParser.json(), malformedErrorHandler]);
 
 // decorate utils to event
 app.use((req, _, next) => {
@@ -42,7 +44,6 @@ app.use((_, res, next) => {
 });
 
 // configure app for user JWT Passport
-app.use(passport.initialize());
 jwtPassport(passport);
 
 const unauthorizedErrorHandler = (req, res, next) => {

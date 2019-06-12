@@ -23,7 +23,7 @@ services:
     image: nginx
     container_name: web
     volumes:
-      - .Docker/web.conf:/etc/nginx/nginx.conf
+      - ./config/web/web.conf:/etc/nginx/nginx.conf
       - ./nginx/cache/:/etc/nginx/cache
     ports:
       - 80:80

@@ -17,9 +17,12 @@ describe('Login Controller', () => {
     const request = {
       body: {
         data: {
-          email: 'validEmail@example.com',
-          password: 'validPassword',
-          scopes: 'user:profile create:chat read:chat',
+          type: 'tokens',
+          attributes: {
+            email: 'validEmail@example.com',
+            password: 'validPassword',
+            scopes: 'user:profile create:chat read:chat',
+          },
         },
       },
       instrumentation: {
@@ -34,6 +37,7 @@ describe('Login Controller', () => {
       validateRequest(request);
     } catch (e) {
       error = e;
+      console.log(e);
     }
 
     expect(error).toBeFalsy();
@@ -43,8 +47,11 @@ describe('Login Controller', () => {
     const request = {
       body: {
         data: {
-          email: 'invalidEmail',
-          password: 'validPassword',
+          type: 'tokens',
+          attributes: {
+            email: 'invalidEmail',
+            password: 'validPassword',
+          },
         },
       },
       instrumentation: {
@@ -69,8 +76,12 @@ describe('Login Controller', () => {
     const request = {
       body: {
         data: {
-          email: 'validEmail@example.com',
-          password: 'validPassword',
+          type: 'tokens',
+          attributes: {
+            email: 'validEmail@example.com',
+            password: 'validPassword',
+            scopes: 'user:profile create:chat read:chat',
+          },
         },
       },
       instrumentation: {
@@ -100,8 +111,12 @@ describe('Login Controller', () => {
     const request = {
       body: {
         data: {
-          email: 'validEmail@example.com',
-          password: 'validPassword',
+          type: 'tokens',
+          attributes: {
+            email: 'validEmail@example.com',
+            password: 'validPassword',
+            scopes: 'user:profile create:chat read:chat',
+          },
         },
       },
       instrumentation: {
@@ -151,42 +166,16 @@ describe('Login Controller', () => {
     expect(state).toMatchSnapshot();
   });
 
-  it('can verify password if password is not correct', () => {
-    const request = {
-      body: {
-        data: {
-          email: 'validEmail@example.com',
-          password: 'validPassword', // TODO: get real hashed password here
-        },
-      },
-      user: {
-        email: 'validEmail@example.com',
-        password: 'notCorrect',
-      },
-      instrumentation: {
-        error: jest.fn(),
-      },
-    };
-
-    let error;
-
-    try {
-      verifyPassword(request);
-    } catch (e) {
-      error = e;
-    }
-
-    expect(error).toBeInstanceOf(BadRequestError);
-    expect(error).toMatchSnapshot();
-  });
-
   it('can generate token for specified user', () => {
     const request = {
       body: {
         data: {
-          email: 'validEmail@example.com',
-          password: 'validPassword',
-          scopes: 'user:profile create:chat read:chat',
+          type: '',
+          attributes: {
+            email: 'validEmail@example.com',
+            password: 'validPassword',
+            scopes: 'user:profile create:chat read:chat',
+          },
         },
       },
       user: {
@@ -202,13 +191,16 @@ describe('Login Controller', () => {
     expect(state).toHaveProperty('expireAt');
   });
 
-  it('can generate token for specified user', () => {
+  it('throw BadRequestError if requested scope for user is not valid', () => {
     const request = {
       body: {
         data: {
-          email: 'validEmail@example.com',
-          password: 'validPassword',
-          scopes: 'user:profile create:chat read:chat delete:user',
+          type: 'tokens',
+          attributes: {
+            email: 'validEmail@example.com',
+            password: 'validPassword',
+            scopes: 'user:profile create:chat read:chat delete:user',
+          },
         },
       },
       user: {
@@ -232,12 +224,6 @@ describe('Login Controller', () => {
 
   it('can return response correctly', () => {
     const request = {
-      body: {
-        data: {
-          email: 'validEmail@example.com',
-          password: 'validPassword',
-        },
-      },
       token: 'Berear mockToken',
       expireAt: '123456',
     };
