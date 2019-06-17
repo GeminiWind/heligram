@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt';
 import { BadRequestError, InternalError } from '../../lib/errors';
 
+const SALT_ROUND = 10;
+
 function validateRequest(req) {
   const { schemaValidator, instrumentation } = req;
   const isValid = schemaValidator.validate('https://heligram.com/create-user+v1.json', req.body);
@@ -47,18 +49,19 @@ async function createUser(req) {
     instrumentation,
     storageLibrary,
     body: {
-      data,
+      data: {
+        attributes,
+      },
     },
   } = req;
 
-  const saltRounds = 10;
-  const salt = bcrypt.genSaltSync(saltRounds);
-  const hashedPassword = bcrypt.hashSync(data.password, salt);
+  const salt = bcrypt.genSaltSync(SALT_ROUND);
+  const hashedPassword = bcrypt.hashSync(attributes.password, salt);
 
   const record = {
-    Path: `user/${data.attributes.email}`,
+    Path: `user/${attributes.email}`,
     Content: {
-      email: data.attributes.email,
+      email: attributes.email,
       password: hashedPassword,
       scopes: 'user:profile create:chat read:chat',
     },

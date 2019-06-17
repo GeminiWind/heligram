@@ -8,16 +8,27 @@ const logger = createLogger({
     format.timestamp({
       format: 'YYYY-MM-DD HH:mm:ss',
     }),
-    format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`),
+    format.printf(info => JSON.stringify({
+      level: info.level,
+      message: info.message,
+      meta: {
+        timestamp: info.timestamp,
+      },
+    })),
   ),
   transports: [
     new transports.Console({
       format: format.combine(
-        format.colorize(),
         format.timestamp({
           format: 'YYYY-MM-DD HH:mm:ss',
         }),
-        format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`),
+        format.printf(info => JSON.stringify({
+          level: info.level,
+          message: info.message,
+          meta: {
+            timestamp: info.timestamp,
+          },
+        })),
       ),
     }),
     new transports.File({
