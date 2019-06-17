@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import passport from 'passport';
 import {
+  cache,
   storageLibrary,
   logger,
   wrapperController,
@@ -27,6 +28,7 @@ app.use([bodyParser.json(), malformedErrorHandler]);
 app.use((req, _, next) => {
   logger.info('STARTING REQUEST \n%s', JSON.stringify(req.body, null, 2));
 
+  req.cache = cache;
   req.storageLibrary = storageLibrary;
   req.instrumentation = logger;
   req.schemaValidator = schemaValidator;

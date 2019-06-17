@@ -1,3 +1,4 @@
+import cache from './cache';
 import logger from './logger';
 import storageLibrary from './storageLibrary';
 import schemaValidator from './schemaValidator';
@@ -6,5 +7,5 @@ import loadEnv from './env';
 import jwtPassport from './jwtPassport';
 
 export {
-  logger, storageLibrary, wrapperController, schemaValidator, loadEnv, jwtPassport,
+  cache, logger, storageLibrary, wrapperController, schemaValidator, loadEnv, jwtPassport,
 };
