@@ -7,6 +7,11 @@ services:
     restart: always
     ports:
       - "27017:27017"
+  cache:
+    image: redis:5.0.5-alpine
+    container_name: cache
+    ports: 
+      - "6379:6379"
   app:
     image: node:8.16.0-jessie
     container_name: app
@@ -17,6 +22,7 @@ services:
     restart: always
     links:
       - database:database
+      - cache:cache
     ports:
       - "3000:3000"
   web:

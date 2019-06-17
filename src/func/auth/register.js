@@ -1,11 +1,7 @@
 import bcrypt from 'bcrypt';
 import { BadRequestError, InternalError } from '../../lib/errors';
 
-export default req => Promise.resolve(req)
-  .then(validateRequest)
-  .then(isUserEmailExist)
-  .then(createUser)
-  .then(returnResponse);
+const SALT_ROUND = 10;
 
 function validateRequest(req) {
   const { schemaValidator, instrumentation } = req;
@@ -53,18 +49,19 @@ async function createUser(req) {
     instrumentation,
     storageLibrary,
     body: {
-      data,
+      data: {
+        attributes,
+      },
     },
   } = req;
 
-  const saltRounds = 10;
-  const salt = bcrypt.genSaltSync(saltRounds);
-  const hashedPassword = bcrypt.hashSync(data.password, salt);
+  const salt = bcrypt.genSaltSync(SALT_ROUND);
+  const hashedPassword = bcrypt.hashSync(attributes.password, salt);
 
   const record = {
-    Path: `user/${data.attributes.email}`,
+    Path: `user/${attributes.email}`,
     Content: {
-      email: data.attributes.email,
+      email: attributes.email,
       password: hashedPassword,
       scopes: 'user:profile create:chat read:chat',
     },
@@ -95,3 +92,9 @@ function returnResponse(req) {
     },
   };
 }
+
+export default req => Promise.resolve(req)
+  .then(validateRequest)
+  .then(isUserEmailExist)
+  .then(createUser)
+  .then(returnResponse);
