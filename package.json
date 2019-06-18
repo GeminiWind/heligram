@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "build",
   "scripts": {
-    "start": "yarn nodemon src/index.js --exec babel-node",
+    "start": "yarn nodemon --legacy-watch src/index.js --exec babel-node",
     "test:unit": "yarn jest",
     "test:integration": "yarn newman",
     "lint": "yarn eslint src/*",
