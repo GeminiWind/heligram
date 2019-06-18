@@ -32,9 +32,12 @@ export async function getUserByEmail(req) {
     },
   } = req;
 
-  const user = await storageLibrary.findOne({
-    Path: `user/${email}`,
-  }).lean();
+  const user = await storageLibrary
+    .findOne({
+      Path: `user/${email}`,
+    })
+    .cache({ hKey: `user/${email}` })
+    .lean();
 
   if (!user) {
     instrumentation.error(`User with ${email} was not found`);

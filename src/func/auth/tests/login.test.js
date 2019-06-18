@@ -90,12 +90,14 @@ describe('Login Controller', () => {
       schemaValidator,
       storageLibrary: {
         findOne: jest.fn().mockImplementation(() => ({
-          lean: jest.fn().mockImplementation(() => Promise.resolve({
-            Path: 'user/validEmail@example.com',
-            Content: {
-              email: 'validEmail@example.com',
-              password: 'validPassword',
-            },
+          cache: jest.fn().mockImplementation(() => ({
+            lean: jest.fn().mockImplementation(() => Promise.resolve({
+              Path: 'user/validEmail@example.com',
+              Content: {
+                email: 'validEmail@example.com',
+                password: 'validPassword',
+              },
+            })),
           })),
         })),
       },
@@ -125,7 +127,9 @@ describe('Login Controller', () => {
       schemaValidator,
       storageLibrary: {
         findOne: jest.fn().mockImplementation(() => ({
-          lean: jest.fn().mockImplementation(() => Promise.resolve(false)),
+          cache: jest.fn().mockImplementation(() => ({
+            lean: jest.fn().mockImplementation(() => Promise.resolve(false)),
+          })),
         })),
       },
     };
