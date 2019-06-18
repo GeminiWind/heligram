@@ -23,6 +23,9 @@ services:
     links:
       - database:database
       - cache:cache
+    depends_on: 
+      - cache
+      - database
     ports:
       - "3000:3000"
   web:

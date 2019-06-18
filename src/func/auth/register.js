@@ -33,7 +33,7 @@ async function isUserEmailExist(req) {
 
   const user = await storageLibrary.findOne({
     Path: `user/${email}`,
-  });
+  }).cache({ hKey: `user/${email}` });
 
   if (user) {
     instrumentation.error(`User with ${email} already exist.`);

@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import moment from 'moment';
+import cache from './cache';
 
 const storageLibrary = new Schema({
   Path: {
@@ -22,6 +23,33 @@ const storageLibrary = new Schema({
   },
 });
 
+// cache mechanism
+const { exec } = mongoose.Query.prototype;
+
+mongoose.Query.prototype.cache = function config({
+  hkey = '',
+}) {
+  this.cache = true;
+  this.hKey = hkey;
+
+  return this;
+};
+
+mongoose.Query.prototype.exec = async function doCache(...args) {
+  if (!this.cache) {
+    return exec.apply(this, args);
+  }
+
+  const key = JSON.stringify(this.getQuery());
+  const cacheValue = await cache.hget(this.hKey, key);
+
+  if (cacheValue) return this.model(JSON.parse(cacheValue));
+
+  const result = await exec.apply(this, args);
+  await cache.hset(this.hKey, key, JSON.stringify(result));
+
+  return result;
+};
 
 storageLibrary.pre('save', function save(next) {
   const now = moment().unix();
@@ -33,6 +61,12 @@ storageLibrary.pre('save', function save(next) {
   if (!this.Attributes.createdAt) {
     this.Attributes.createdAt = now;
   }
+
+  next();
+});
+
+storageLibrary.post('remove', async function remove(next) {
+  await cache.del(this.Path);
 
   next();
 });
