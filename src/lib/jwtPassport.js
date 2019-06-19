@@ -9,12 +9,12 @@ export default function jwtPassport(passport) {
 
   passport.use(new JwtStrategy(options, (jwtPayload, done) => {
     const {
-      userEmail,
+      email,
       scopes,
     } = jwtPayload;
 
     storageLibrary.findOne({
-      Path: `user/${userEmail}`,
+      Path: `user/${email}`,
     }).then((record) => {
       if (record) {
         const {

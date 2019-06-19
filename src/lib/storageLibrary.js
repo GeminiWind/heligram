@@ -26,11 +26,9 @@ const storageLibrary = new Schema({
 // cache mechanism
 const { exec } = mongoose.Query.prototype;
 
-mongoose.Query.prototype.cache = function config({
-  hkey = '',
-}) {
+mongoose.Query.prototype.cache = function config(option = {}) {
   this.cache = true;
-  this.hKey = hkey;
+  this.hKey = option.hKey || '';
 
   return this;
 };
@@ -43,9 +41,16 @@ mongoose.Query.prototype.exec = async function doCache(...args) {
   const key = JSON.stringify(this.getQuery());
   const cacheValue = await cache.hget(this.hKey, key);
 
-  if (cacheValue) return this.model(JSON.parse(cacheValue));
+  if (cacheValue) {
+    if (Array.isArray(cacheValue)) {
+      return cacheValue.map(record => this.model(JSON.parse(record)));
+    }
+
+    return this.model(JSON.parse(cacheValue));
+  }
 
   const result = await exec.apply(this, args);
+
   await cache.hset(this.hKey, key, JSON.stringify(result));
 
   return result;
