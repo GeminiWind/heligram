@@ -48,6 +48,7 @@ async function createUser(req) {
   const {
     instrumentation,
     storageLibrary,
+    cache,
     body: {
       data: {
         attributes,
@@ -58,8 +59,10 @@ async function createUser(req) {
   const salt = bcrypt.genSaltSync(SALT_ROUND);
   const hashedPassword = bcrypt.hashSync(attributes.password, salt);
 
+  const Path = `user/${attributes.email}`;
+
   const record = {
-    Path: `user/${attributes.email}`,
+    Path,
     Content: {
       email: attributes.email,
       password: hashedPassword,
@@ -75,6 +78,9 @@ async function createUser(req) {
 
     throw new InternalError('Error in creating user.');
   }
+
+  // delete cache record because new record is added successfully
+  await cache.del(Path);
 
   return req;
 }

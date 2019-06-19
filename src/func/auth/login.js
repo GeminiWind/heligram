@@ -86,7 +86,7 @@ export function generateToken(req) {
   // generate token
   const token = jwt.sign(
     {
-      userEmail: user.email,
+      email: user.email,
       sub: user.email,
       iss: 'api.heligram.com',
       scopes: wantedScopes,
