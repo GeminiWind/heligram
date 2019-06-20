@@ -11,7 +11,7 @@ const wrapperController = fn => async (req, res) => {
     const result = await fn(req);
 
     if (result) {
-      res.json(result.body).sendStatus(result.statusCode);
+      res.status(result.statusCode).json(result.body);
     }
   } catch (error) {
     if (error instanceof JsonApiError) {
