@@ -46,7 +46,7 @@ const routes = [
         },
       },
     }),
-    middlewares: [(req, res, next) => jwtAuthz(req, res, next)(['user:profile'])],
+    middlewares: [jwtAuthz(['user:profile'])],
     meta: {
       isProtected: true,
     },

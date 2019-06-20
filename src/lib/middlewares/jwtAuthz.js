@@ -14,23 +14,23 @@ const checkScopes = (grantedScopes, apiScopes) => {
   return true;
 };
 
-export default function jwtAuthz(req, res, next) {
-  return function (apiScopes) {
-    const grantedScopes = req.user.scopes;
+const jwtAuthz = apiScopes => (req, res, next) => {
+  const grantedScopes = req.user.scopes;
 
-    try {
-      checkScopes(grantedScopes, apiScopes);
-      next();
-    } catch (error) {
-      if (error instanceof ForbiddenError) {
-        const e = error.toJSON();
+  try {
+    checkScopes(grantedScopes, apiScopes);
+    next();
+  } catch (error) {
+    if (error instanceof ForbiddenError) {
+      const e = error.toJSON();
 
-        res.status(e.status).json(
-          {
-            errors: [e],
-          },
-        );
-      }
+      res.status(e.status).json(
+        {
+          errors: [e],
+        },
+      );
     }
-  };
-}
+  }
+};
+
+export default jwtAuthz;
