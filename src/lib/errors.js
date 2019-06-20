@@ -120,6 +120,30 @@ class ForbiddenError extends JsonApiError {
   }
 }
 
+class UnsupportedMediaTypeError extends JsonApiError {
+  constructor(message) {
+    let unsupportedMediaTypeError = {
+      title: 'UnsupportedMediaTypeError',
+      code: 'UnsupportedMediaTypeError',
+      status: 415,
+      detail: 'UnsupportedMediaTypeError',
+    };
+    if (typeof message === 'string') {
+      unsupportedMediaTypeError = {
+        ...unsupportedMediaTypeError,
+        detail: message,
+      };
+    }
+    if (typeof message === 'object') {
+      unsupportedMediaTypeError = {
+        ...unsupportedMediaTypeError,
+        ...message,
+      };
+    }
+    super(unsupportedMediaTypeError);
+  }
+}
+
 export {
   InternalError,
   NotFoundError,
@@ -128,4 +152,5 @@ export {
   TimeoutError,
   UnauthorizedError,
   ForbiddenError,
+  UnsupportedMediaTypeError,
 };

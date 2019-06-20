@@ -1,12 +1,8 @@
 import { InternalError } from './errors';
 import JsonApiError from './jsonApiError';
+import { DEFAULT_HEADER } from '../constants';
 
 const wrapperController = fn => async (req, res) => {
-  const defaultHeader = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  };
-
   try {
     const result = await fn(req);
 
@@ -17,7 +13,7 @@ const wrapperController = fn => async (req, res) => {
     if (error instanceof JsonApiError) {
       const e = error.toJSON();
 
-      res.set(defaultHeader).status(e.status).json(
+      res.set(DEFAULT_HEADER).status(e.status).json(
         {
           errors: [e],
         },
@@ -25,7 +21,7 @@ const wrapperController = fn => async (req, res) => {
     } else {
       // if unknown error was thrown
       // then message it to InternalError
-      res.set(defaultHeader).sendStatus(500).json(
+      res.set(DEFAULT_HEADER).sendStatus(500).json(
         {
           errors: [new InternalError().toJSON()],
         },

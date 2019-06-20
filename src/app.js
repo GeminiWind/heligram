@@ -25,7 +25,7 @@ loadEnv();
 // configure CORS
 app.use(cors());
 // manipulate JSON and handle malformed error
-app.use([bodyParser.json(), malformedErrorHandler]);
+app.use([bodyParser.json({ type: 'application/vnd.api+json' }), malformedErrorHandler]);
 
 app.use(loggingHttpRequest);
 
