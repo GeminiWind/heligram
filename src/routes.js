@@ -3,6 +3,18 @@ import { jwtAuthz } from './lib/middlewares';
 
 const routes = [
   {
+    path: '/health',
+    method: 'GET',
+    controller: () => ({
+      statusCode: 200,
+      body: {},
+    }),
+    middlewares: [],
+    meta: {
+      isProtected: false,
+    },
+  },
+  {
     path: '/tokens',
     method: 'POST',
     controller: login,
