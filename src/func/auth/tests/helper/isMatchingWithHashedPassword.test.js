@@ -6,4 +6,10 @@ describe('isMatchingWithHashedPassword helper', () => {
 
     expect(isMatching).toBeFalsy();
   });
+
+  it('return true if they are matched with each other', () => {
+    const isMatching = isMatchingWithHashedPassword('temando@123', '$2b$10$lmtfpvxcPqC/tjJdqe7T6e3s.xWA2KxUQLZsA794xZTk.cJSQeIxi');
+
+    expect(isMatching).toBeTruthy();
+  });
 });

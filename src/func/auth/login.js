@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import { intersection } from 'lodash';
+import randToken from 'rand-token';
 import { isMatchingWithHashedPassword } from './helper';
 import { NotFoundError, BadRequestError } from '../../lib/errors';
 
@@ -66,9 +67,10 @@ export function verifyPassword(req) {
   return req;
 }
 
-export function generateToken(req) {
+export async function generateAccessToken(req) {
   const {
     user,
+    cache,
     body: { data: { attributes: { scopes } } },
   } = req;
 
@@ -99,10 +101,81 @@ export function generateToken(req) {
 
   const expireAt = moment().add(30, 'm').unix();
 
+  const refreshToken = randToken.generate(16);
+
+  // store refreshToken in cache in 6 month
+  await cache.set(refreshToken, JSON.stringify({
+    email: user.email,
+    scopes: wantedScopes,
+  }), 'EX', 15552000);
+
   return {
     ...req,
-    token: `Bearer ${token}`,
+    accessToken: `Bearer ${token}`,
     expireAt,
+    refreshToken,
+  };
+}
+
+export async function verifyRefreshToken(req) {
+  const {
+    cache,
+    body: { data: { attributes: { refreshToken } } },
+  } = req;
+
+  const isRefreshTokenValid = await cache.get(refreshToken);
+
+  if (!isRefreshTokenValid) {
+    throw new BadRequestError('Refresh token is invalid.');
+  }
+
+  return req;
+}
+
+export async function exchangeRefreshTokenToAccessToken(req) {
+  const {
+    storageLibrary,
+    instrumentation,
+    cache,
+    body: { data: { attributes: { refreshToken } } },
+  } = req;
+
+  const cacheValue = await cache.get(refreshToken);
+  const { email, scopes } = JSON.parse(cacheValue);
+
+  const { user } = await getUserByEmail({
+    storageLibrary,
+    instrumentation,
+    body: {
+      data: {
+        attributes: {
+          email,
+        },
+      },
+    },
+  });
+
+  // generate token
+  const token = jwt.sign(
+    {
+      email: user.email,
+      sub: user.email,
+      iss: 'api.heligram.com',
+      scopes,
+    },
+    process.env.APP_KEY,
+    {
+      expiresIn: '30m',
+    },
+  );
+
+  const expireAt = moment().add(30, 'm').unix();
+
+  return {
+    ...req,
+    accessToken: `Bearer ${token}`,
+    expireAt,
+    refreshToken,
   };
 }
 
@@ -113,7 +186,8 @@ export function returnResponse(req) {
       data: {
         type: 'tokens',
         attributes: {
-          accessToken: req.token,
+          accessToken: req.accessToken,
+          refreshToken: req.refreshToken,
           expireAt: req.expireAt,
         },
       },
@@ -121,9 +195,31 @@ export function returnResponse(req) {
   };
 }
 
-export default req => Promise.resolve(req)
-  .then(validateRequest)
+const handlePasswordGrantType = req => Promise.resolve(req)
   .then(getUserByEmail)
   .then(verifyPassword)
-  .then(generateToken)
+  .then(generateAccessToken);
+
+
+const handleRefreshGrantType = req => Promise.resolve(req)
+  .then(verifyRefreshToken)
+  .then(exchangeRefreshTokenToAccessToken);
+
+export default req => Promise.resolve(req)
+  .then(validateRequest)
+  .then((state) => {
+    const {
+      body: {
+        data: {
+          attributes: {
+            grantType,
+          },
+        },
+      },
+    } = state;
+
+    if (grantType === 'password') return handlePasswordGrantType(state);
+    if (grantType === 'refreshToken') return handleRefreshGrantType(state);
+    return state;
+  })
   .then(returnResponse);
