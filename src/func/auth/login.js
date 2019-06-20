@@ -4,6 +4,7 @@ import { intersection } from 'lodash';
 import randToken from 'rand-token';
 import { isMatchingWithHashedPassword } from './helper';
 import { NotFoundError, BadRequestError } from '../../lib/errors';
+import { PASSWORD_GRANT_TYPE, REFRESH_TOKEN_GRANT_TYPE } from '../../constants';
 
 export function validateRequest(req) {
   const { schemaValidator, instrumentation } = req;
@@ -218,8 +219,8 @@ export default req => Promise.resolve(req)
       },
     } = state;
 
-    if (grantType === 'password') return handlePasswordGrantType(state);
-    if (grantType === 'refreshToken') return handleRefreshGrantType(state);
+    if (grantType === PASSWORD_GRANT_TYPE) return handlePasswordGrantType(state);
+    if (grantType === REFRESH_TOKEN_GRANT_TYPE) return handleRefreshGrantType(state);
     return state;
   })
   .then(returnResponse);
