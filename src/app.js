@@ -50,7 +50,7 @@ routes.map((route) => {
   app[route.method.toLowerCase()](
     route.path,
     route.middlewares,
-    async (req, res) => await wrapperController(req, res)(route.controller),
+    wrapperController(route.controller),
   );
 });
 

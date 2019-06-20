@@ -1,7 +1,7 @@
 import { InternalError } from './errors';
 import JsonApiError from './jsonApiError';
 
-const wrapperController = (req, res) => async (fn) => {
+const wrapperController = fn => async (req, res) => {
   const defaultHeader = {
     Accept: 'application/json',
     'Content-Type': 'application/json',

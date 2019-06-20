@@ -45,22 +45,6 @@ Object {
 }
 `;
 
-exports[`Login Controller success for the whole flow in case grantType is 'password' 1`] = `
-Object {
-  "body": Object {
-    "data": Object {
-      "attributes": Object {
-        "accessToken": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhbGlkRW1haWxAZXhhbXBsZS5jb20iLCJzdWIiOiJ2YWxpZEVtYWlsQGV4YW1wbGUuY29tIiwiaXNzIjoiYXBpLmhlbGlncmFtLmNvbSIsInNjb3BlcyI6WyJ1c2VyOnByb2ZpbGUiLCJjcmVhdGU6Y2hhdCIsInJlYWQ6Y2hhdCJdLCJpYXQiOjE1NjEwMDMzOTMsImV4cCI6MTU2MTAwNTE5M30.MOd-sXu085jkSyft1lrx7a4UaOMyL77S3s1lYnkkrfM",
-        "expireAt": 1561005193,
-        "refreshToken": "2VB6Mb5zD87gnY6U",
-      },
-      "type": "tokens",
-    },
-  },
-  "statusCode": 200,
-}
-`;
-
 exports[`Login Controller throw 'BadRequestError'  in case that request does not matches with schema 1`] = `[BadRequestError: BadRequestError BadRequestError]`;
 
 exports[`Login Controller throw 'BadRequestError' if provided refreshToken is invalid 1`] = `[BadRequestError: BadRequestError Refresh token is invalid.]`;
