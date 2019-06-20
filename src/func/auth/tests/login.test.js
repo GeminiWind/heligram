@@ -1,5 +1,11 @@
 import login, {
-  validateRequest, getUserByEmail, verifyPassword, generateToken, returnResponse,
+  validateRequest,
+  getUserByEmail,
+  verifyPassword,
+  verifyRefreshToken,
+  exchangeRefreshTokenToAccessToken,
+  generateAccessToken,
+  returnResponse,
 } from '../login';
 import { schemaValidator } from '../../../lib';
 import { BadRequestError, NotFoundError } from '../../../lib/errors';
@@ -13,12 +19,13 @@ describe('Login Controller', () => {
     delete process.env.APP_KEY;
   });
 
-  it('can validate request in case that request is matched with schema', () => {
+  it('can validate request in case that request is matched with \'password\' grantType schema', () => {
     const request = {
       body: {
         data: {
           type: 'tokens',
           attributes: {
+            grantType: 'password',
             email: 'validEmail@example.com',
             password: 'validPassword',
             scopes: 'user:profile create:chat read:chat',
@@ -37,7 +44,34 @@ describe('Login Controller', () => {
       validateRequest(request);
     } catch (e) {
       error = e;
-      console.log(e);
+    }
+
+    expect(error).toBeFalsy();
+  });
+
+  it('can validate request in case that request is matched with \'refreshToken\' grantType schema', () => {
+    const request = {
+      body: {
+        data: {
+          type: 'tokens',
+          attributes: {
+            grantType: 'refreshToken',
+            refreshToken: 'mock-refreshToken',
+          },
+        },
+      },
+      instrumentation: {
+        error: jest.fn(),
+      },
+      schemaValidator,
+    };
+
+    let error;
+
+    try {
+      validateRequest(request);
+    } catch (e) {
+      error = e;
     }
 
     expect(error).toBeFalsy();
@@ -78,6 +112,7 @@ describe('Login Controller', () => {
         data: {
           type: 'tokens',
           attributes: {
+            grantType: 'password',
             email: 'validEmail@example.com',
             password: 'validPassword',
             scopes: 'user:profile create:chat read:chat',
@@ -115,6 +150,7 @@ describe('Login Controller', () => {
         data: {
           type: 'tokens',
           attributes: {
+            grantType: 'password',
             email: 'validEmail@example.com',
             password: 'validPassword',
             scopes: 'user:profile create:chat read:chat',
@@ -147,17 +183,21 @@ describe('Login Controller', () => {
   });
 
   // FIXME: get real hashed password
-  it.skip('can verify password if password is correct', () => {
+  it('can verify password if password is correct', () => {
     const request = {
       body: {
         data: {
-          email: 'validEmail@example.com',
-          password: 'validPassword', // TODO: get real hashed password here
+          type: 'tokens',
+          attributes: {
+            grantType: 'password',
+            email: 'validEmail@example.com',
+            password: 'temando@123',
+          },
         },
       },
       user: {
         email: 'validEmail@example.com',
-        password: 'hashedPassword',
+        password: '$2b$10$lmtfpvxcPqC/tjJdqe7T6e3s.xWA2KxUQLZsA794xZTk.cJSQeIxi',
       },
       instrumentation: {
         error: jest.fn(),
@@ -170,12 +210,13 @@ describe('Login Controller', () => {
     expect(state).toMatchSnapshot();
   });
 
-  it('can generate token for specified user', () => {
+  it('can generate token for specified user', async () => {
     const request = {
       body: {
         data: {
-          type: '',
+          type: 'tokens',
           attributes: {
+            grantType: 'password',
             email: 'validEmail@example.com',
             password: 'validPassword',
             scopes: 'user:profile create:chat read:chat',
@@ -187,20 +228,25 @@ describe('Login Controller', () => {
         password: 'notCorrect',
         scopes: 'user:profile create:chat read:chat',
       },
+      cache: {
+        set: jest.fn().mockImplementation(value => Promise.resolve(value)),
+      },
     };
 
-    const state = generateToken(request);
+    const state = await generateAccessToken(request);
 
-    expect(state).toHaveProperty('token');
+    expect(state).toHaveProperty('refreshToken');
+    expect(state).toHaveProperty('accessToken');
     expect(state).toHaveProperty('expireAt');
   });
 
-  it('throw BadRequestError if requested scope for user is not valid', () => {
+  it('throw \'BadRequestError\' if requested scope for user is not valid', async () => {
     const request = {
       body: {
         data: {
           type: 'tokens',
           attributes: {
+            grantType: 'password',
             email: 'validEmail@example.com',
             password: 'validPassword',
             scopes: 'user:profile create:chat read:chat delete:user',
@@ -212,12 +258,15 @@ describe('Login Controller', () => {
         password: 'notCorrect',
         scopes: 'user:profile create:chat read:chat',
       },
+      cache: {
+        set: jest.fn().mockImplementation(value => Promise.resolve(value)),
+      },
     };
 
     let error;
 
     try {
-      generateToken(request);
+      await generateAccessToken(request);
     } catch (e) {
       error = e;
     }
@@ -228,7 +277,8 @@ describe('Login Controller', () => {
 
   it('can return response correctly', () => {
     const request = {
-      token: 'Berear mockToken',
+      accessToken: 'Berear mockToken',
+      refreshToken: 'mock-refreshToken',
       expireAt: '123456',
     };
 
@@ -239,14 +289,75 @@ describe('Login Controller', () => {
     expect(response).toMatchSnapshot();
   });
 
-  // FIXME: get the real hashed password
-  it.skip('success for the whole flow', () => {
+  it('return original state if provided refreshToken is valid', async () => {
+    const request = {
+      cache: {
+        get: jest.fn().mockImplementation(() => Promise.resolve(JSON.stringify({
+          email: 'validEmail@example.com',
+          scopes: 'user:profile create:chat read:chat',
+        }))),
+      },
+      body: {
+        data: {
+          type: 'tokens',
+          attributes: {
+            grantType: 'refreshToken',
+            refreshToken: 'mock-refreshToken',
+          },
+        },
+      },
+    };
+
+    let error;
+
+    try {
+      await verifyRefreshToken(request);
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error).toBeUndefined();
+  });
+
+  it('throw \'BadRequestError\' if provided refreshToken is invalid', async () => {
+    const request = {
+      cache: {
+        get: jest.fn().mockImplementation(() => Promise.resolve(undefined)),
+      },
+      body: {
+        data: {
+          type: 'tokens',
+          attributes: {
+            grantType: 'refreshToken',
+            refreshToken: 'invalid-refreshToken',
+          },
+        },
+      },
+    };
+
+    let error;
+
+    try {
+      await verifyRefreshToken(request);
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error).toBeInstanceOf(BadRequestError);
+    expect(error).toMatchSnapshot();
+  });
+
+  it('success for the whole flow in case grantType is \'password\'', async () => {
     const request = {
       body: {
         data: {
-          email: 'validEmail@example.com',
-          password: 'validPassword',
-          scopes: 'user:profile create:chat read:chat',
+          type: 'tokens',
+          attributes: {
+            grantType: 'password',
+            email: 'validEmail@example.com',
+            password: 'temando@123',
+            scopes: 'user:profile create:chat read:chat',
+          },
         },
       },
       instrumentation: {
@@ -255,21 +366,73 @@ describe('Login Controller', () => {
       schemaValidator,
       storageLibrary: {
         findOne: jest.fn().mockImplementation(() => ({
-          lean: jest.fn().mockImplementation(() => Promise.resolve({
-            Path: 'user/validEmail@example.com',
-            Content: {
-              email: 'validEmail@example.com',
-              password: 'validPassword',
-            },
+          cache: jest.fn().mockImplementation(() => ({
+            lean: jest.fn().mockImplementation(() => Promise.resolve({
+              Path: 'user/validEmail@example.com',
+              Content: {
+                email: 'validEmail@example.com',
+                password: '$2b$10$lmtfpvxcPqC/tjJdqe7T6e3s.xWA2KxUQLZsA794xZTk.cJSQeIxi',
+                scopes: 'user:profile create:chat read:chat',
+              },
+            })),
           })),
         })),
       },
+      cache: {
+        set: jest.fn().mockImplementation(value => Promise.resolve(value)),
+      },
     };
 
-    const response = login(request);
+    const response = await login(request);
 
     expect(response).toHaveProperty('statusCode', 200);
-    expect(response).toHaveProperty('body');
-    expect(response).toMatchSnapshot();
+    expect(response).toHaveProperty(['body', 'data', 'attributes', 'accessToken']);
+    expect(response).toHaveProperty(['body', 'data', 'attributes', 'expireAt']);
+    expect(response).toHaveProperty(['body', 'data', 'attributes', 'refreshToken']);
+  });
+
+  it('success for the whole flow in case grantType is \'refreshToken\'', async () => {
+    const request = {
+      body: {
+        data: {
+          type: 'tokens',
+          attributes: {
+            grantType: 'refreshToken',
+            refreshToken: 'valid-refreshToken',
+          },
+        },
+      },
+      instrumentation: {
+        error: jest.fn(),
+      },
+      schemaValidator,
+      storageLibrary: {
+        findOne: jest.fn().mockImplementation(() => ({
+          cache: jest.fn().mockImplementation(() => ({
+            lean: jest.fn().mockImplementation(() => Promise.resolve({
+              Path: 'user/validEmail@example.com',
+              Content: {
+                email: 'validEmail@example.com',
+                password: '$2b$10$lmtfpvxcPqC/tjJdqe7T6e3s.xWA2KxUQLZsA794xZTk.cJSQeIxi',
+                scopes: 'user:profile create:chat read:chat',
+              },
+            })),
+          })),
+        })),
+      },
+      cache: {
+        get: jest.fn().mockImplementation(() => Promise.resolve(JSON.stringify({
+          email: 'validEmail@example.com',
+          scopes: 'user:profile create:chat read:chat',
+        }))),
+      },
+    };
+
+    const response = await login(request);
+
+    expect(response).toHaveProperty('statusCode', 200);
+    expect(response).toHaveProperty(['body', 'data', 'attributes', 'accessToken']);
+    expect(response).toHaveProperty(['body', 'data', 'attributes', 'expireAt']);
+    expect(response).toHaveProperty(['body', 'data', 'attributes', 'refreshToken']);
   });
 });
