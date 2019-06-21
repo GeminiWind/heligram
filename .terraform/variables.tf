@@ -11,9 +11,10 @@ variable "aws_secret_key" {
   description = "AWS Secret key."
 }
 
-variable "aws_amis" {
-  default = {
-    // FIXME: find out the correct AWS AMI id
-    "ap-southeast-2" = "ami-b1cf19c6"
-  }
+variable "public_key_name" {
+  description = "SSH Key name to connect your EC2."
+}
+
+variable "public_key" {
+  description = "SSH Public Key."
 }
