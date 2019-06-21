@@ -21,5 +21,6 @@ log/*
 coverage
 .env.production
 
-nginx/*
+.nginx/cache
+.nginx/log
 !nginx/nginx.conf
