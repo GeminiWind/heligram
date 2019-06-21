@@ -24,6 +24,10 @@ Heligram
 
 Heligram is a server to serve online chat feature build on Express + MongoDB + Socket.io
 
+## API Endpoint
+
+TBD
+
 ## Installation
 
 To install all dependencies of this project, use the following command:
