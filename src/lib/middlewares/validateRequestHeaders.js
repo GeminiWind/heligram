@@ -1,7 +1,7 @@
-import { UnsupportedMediaTypeError } from '../errors';
+import { UnsupportedMediaTypeError, NotAcceptableError } from '../errors';
 import { DEFAULT_HEADER } from '../../constants';
 
-export default function unsupportedMediaTypeErrorHandler(_, req, res, next) {
+export default function validateRequestHeaders(req, res, next) {
   const allowedMediaTypes = ['application/vnd.api+json'];
 
   if (!allowedMediaTypes.includes(req.headers['content-type'])) {
@@ -13,8 +13,15 @@ export default function unsupportedMediaTypeErrorHandler(_, req, res, next) {
       .json({
         errors: [unsupportedMediaTypeError],
       });
+  } else if (!allowedMediaTypes.includes(req.headers.accept)) {
+    const e = new NotAcceptableError(`Accept: '${req.headers.accept}' is not allowed.`).toJSON();
 
-    next(unsupportedMediaTypeError);
+    res
+      .set(DEFAULT_HEADER)
+      .status(e.status)
+      .json({
+        errors: [e],
+      });
   } else {
     next();
   }

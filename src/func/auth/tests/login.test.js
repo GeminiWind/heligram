@@ -182,7 +182,6 @@ describe('Login Controller', () => {
     expect(error).toMatchSnapshot();
   });
 
-  // FIXME: get real hashed password
   it('can verify password if password is correct', () => {
     const request = {
       body: {
@@ -345,6 +344,49 @@ describe('Login Controller', () => {
 
     expect(error).toBeInstanceOf(BadRequestError);
     expect(error).toMatchSnapshot();
+  });
+
+  it('can exchange access token with provided refreshToken ', async () => {
+    const request = {
+      cache: {
+        get: jest.fn().mockImplementation(() => Promise.resolve(JSON.stringify({
+          email: 'validEmail@example.com',
+          scopes: 'user:profile create:chat read:chat',
+        }))),
+      },
+      body: {
+        data: {
+          type: 'tokens',
+          attributes: {
+            grantType: 'refreshToken',
+            refreshToken: 'invalid-refreshToken',
+          },
+        },
+      },
+      instrumentation: {
+        error: jest.fn(),
+      },
+      schemaValidator,
+      storageLibrary: {
+        findOne: jest.fn().mockImplementation(() => ({
+          cache: jest.fn().mockImplementation(() => ({
+            lean: jest.fn().mockImplementation(() => Promise.resolve({
+              Path: 'user/validEmail@example.com',
+              Content: {
+                email: 'validEmail@example.com',
+                password: 'validPassword',
+              },
+            })),
+          })),
+        })),
+      },
+    };
+
+    const state = await exchangeRefreshTokenToAccessToken(request);
+
+    expect(state).toHaveProperty('refreshToken');
+    expect(state).toHaveProperty('accessToken');
+    expect(state).toHaveProperty('expireAt');
   });
 
   it('success for the whole flow in case grantType is \'password\'', async () => {

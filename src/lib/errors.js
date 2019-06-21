@@ -144,6 +144,31 @@ class UnsupportedMediaTypeError extends JsonApiError {
   }
 }
 
+class NotAcceptableError extends JsonApiError {
+  constructor(message) {
+    let notAcceptableError = {
+      title: 'NotAcceptableError',
+      code: 'NotAcceptableError',
+      status: 415,
+      detail: 'NotAcceptableError',
+    };
+    if (typeof message === 'string') {
+      notAcceptableError = {
+        ...notAcceptableError,
+        detail: message,
+      };
+    }
+    if (typeof message === 'object') {
+      notAcceptableError = {
+        ...notAcceptableError,
+        ...message,
+      };
+    }
+    super(notAcceptableError);
+  }
+}
+
+
 export {
   InternalError,
   NotFoundError,
@@ -153,4 +178,5 @@ export {
   UnauthorizedError,
   ForbiddenError,
   UnsupportedMediaTypeError,
+  NotAcceptableError,
 };
