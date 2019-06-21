@@ -36,7 +36,7 @@
 
 ```
 
-How to add a new endpoint
+## How to add a new endpoint
 
 - Create a new folder in functions which represents the resource it's responsible for. Folder name should be in plural. For example, if I want to create new endpoints for CRUD posts, func/posts should be created.
 - Add controller to src/func/{resource}. It's recommended to:
