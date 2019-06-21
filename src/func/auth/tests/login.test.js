@@ -182,7 +182,6 @@ describe('Login Controller', () => {
     expect(error).toMatchSnapshot();
   });
 
-  // FIXME: get real hashed password
   it('can verify password if password is correct', () => {
     const request = {
       body: {

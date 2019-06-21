@@ -21,8 +21,6 @@ export default function malformedErrorHandler(e, _, res, next) {
       defaultResponseHeader,
       malformedError.status,
     );
-
-    next(new MalformedError());
   } else {
     next();
   }

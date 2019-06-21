@@ -15,6 +15,7 @@ import {
   loggingHttpRequest,
   malformedErrorHandler,
   unauthorizedErrorHandler,
+  validateRequestHeaders,
 } from './lib/middlewares';
 import routes from './routes';
 
@@ -24,11 +25,14 @@ const app = express();
 loadEnv();
 // configure CORS
 app.use(cors());
+// validate headers as JSON API Spec
+app.use(validateRequestHeaders);
 // manipulate JSON and handle malformed error
 app.use([bodyParser.json({ type: 'application/vnd.api+json' }), malformedErrorHandler]);
-
+// logging HTTP request and response
 app.use(loggingHttpRequest);
 
+// decorate library/utilities to request
 app.use((req, _, next) => {
   req.cache = cache;
   req.storageLibrary = storageLibrary;

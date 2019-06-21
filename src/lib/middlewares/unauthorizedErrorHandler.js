@@ -13,8 +13,6 @@ export default function unauthorizedErrorHanlder(req, res, next) {
         .json({
           errors: [unauthorizedError],
         });
-
-      next(new UnauthorizedError());
     } else {
       req.user = user;
       next();
