@@ -8,8 +8,8 @@
 ├── __tests__
 |   ├── Integration Test.json   -- Postman Collection
 |   └── Environment.json        -- Postman Environment
-├── config
-|   ├── web -- Web server config
+├── .nginx
+|   ├── nginx.conf -- Nginx Configuration
 ├── resources
 |   ├── schemass -- Schemas definition
 ├── scripts
