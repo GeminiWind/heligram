@@ -11,7 +11,6 @@ const loggingHttpRequest = expressWinston.logger({
     }),
   ],
   format: winston.format.combine(
-    winston.format.colorize(),
     winston.format.json(),
   ),
   meta: true,
