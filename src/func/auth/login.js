@@ -36,9 +36,9 @@ export async function getUserByEmail(req) {
 
   const user = await storageLibrary
     .findOne({
-      Path: `user/${email}`,
+      Path: `users/${email}`,
     })
-    .cache({ hKey: `user/${email}` })
+    .cache({ hKey: `users/${email}` })
     .lean();
 
   if (!user) {
