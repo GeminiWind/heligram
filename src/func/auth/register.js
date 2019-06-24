@@ -59,7 +59,7 @@ export async function createUser(req) {
   const salt = bcrypt.genSaltSync(SALT_ROUND);
   const hashedPassword = bcrypt.hashSync(attributes.password, salt);
 
-  const Path = `user/${attributes.email}`;
+  const Path = `users/${attributes.email}`;
 
   const record = {
     Path,
