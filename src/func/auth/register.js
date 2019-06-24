@@ -3,7 +3,7 @@ import { BadRequestError, InternalError } from '../../lib/errors';
 
 const SALT_ROUND = 10;
 
-function validateRequest(req) {
+export function validateRequest(req) {
   const { schemaValidator, instrumentation } = req;
   const isValid = schemaValidator.validate('https://heligram.com/create-user+v1.json', req.body);
 
@@ -18,7 +18,7 @@ function validateRequest(req) {
   return req;
 }
 
-async function isUserEmailExist(req) {
+export async function isUserEmailExist(req) {
   const {
     instrumentation,
     storageLibrary,
@@ -44,7 +44,7 @@ async function isUserEmailExist(req) {
   return req;
 }
 
-async function createUser(req) {
+export async function createUser(req) {
   const {
     instrumentation,
     storageLibrary,
@@ -85,7 +85,7 @@ async function createUser(req) {
   return req;
 }
 
-function returnResponse(req) {
+export function returnResponse(req) {
   return {
     statusCode: 201,
     body: {

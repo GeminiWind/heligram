@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Register Controller can return response correctly 1`] = `
+Object {
+  "body": Object {
+    "data": Object {
+      "attributes": Object {
+        "email": "emailExist@example.com",
+      },
+      "type": "users",
+    },
+  },
+  "statusCode": 201,
+}
+`;
+
+exports[`Register Controller create new user successfully as whole flow 1`] = `
+Object {
+  "body": Object {
+    "data": Object {
+      "attributes": Object {
+        "email": "emailExist@example.com",
+      },
+      "type": "users",
+    },
+  },
+  "statusCode": 201,
+}
+`;
+
+exports[`Register Controller throw 'BadRequestError'  in case that request does not matches with schema 1`] = `[BadRequestError: BadRequestError BadRequestError]`;
+
+exports[`Register Controller throw 'BadRequestError' if intended user email does exist 1`] = `[BadRequestError: BadRequestError User with emailExist@example.com already exist.]`;
