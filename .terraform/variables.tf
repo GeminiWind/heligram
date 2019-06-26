@@ -14,7 +14,3 @@ variable "aws_secret_key" {
 variable "public_key_name" {
   description = "SSH Key name to connect your EC2."
 }
-
-variable "public_key" {
-  description = "SSH Public Key."
-}

@@ -22,3 +22,6 @@ coverage
 .env.production
 
 nginx
+.terraform/.terraform
+.terraform/terraform.tfstate
+.terraform/terraform.tfstate.backup

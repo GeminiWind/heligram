@@ -4,34 +4,92 @@ provider "aws" {
   region = "${var.aws_region}"
 }
 
-resource "aws_ami" "ami" {
-  name                = "Sanple AMI"
-  virtualization_type = "hvm"
-  root_device_name    = "/dev/xvda"
+data "aws_ami" "based_ubuntu_ami" {
+  most_recent = true
 
-  ebs_block_device {
-    device_name = "/dev/xvda"
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical
+}
+
+resource "tls_private_key" "privkey" {
+    algorithm = "RSA" 
+    rsa_bits = 4096
+}
+
+resource "aws_security_group" "security_group" {
+  name        = "heligram_security_group"
+  description = "Security group configuration for app"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_key_pair" "public_key" {
   key_name   = "${var.public_key_name}"
-  public_key = "${var.public_key}"
+  public_key = "${tls_private_key.privkey.public_key_openssh}"
 }
 
 resource "aws_instance" "web" {
   instance_type = "t2.small"
-  ami           = "${aws_ami.ami.id}"
+  ami           = "${data.aws_ami.based_ubuntu_ami.id}"
 
-  key_name = "${aws_key_pair.public_key.id}"
+  security_groups = ["${aws_security_group.security_group.name}"]
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get -y update",
-    ]
-  }
+  key_name = "${aws_key_pair.public_key.key_name}"
 
-   tags = {
+  tags = {
     app = "Heligram"
   }
+}
+
+resource "null_resource" "ssh_to_web_instance" {
+  connection {
+    host        = "${aws_instance.web.public_dns}"
+    type        = "ssh"
+    agent       = false
+    private_key = "${tls_private_key.privkey.private_key_pem}"
+    user        = "ubuntu"
+  }  
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 20",
+      "sudo apt-get -y update",
+      "sudo apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common",
+      "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -",
+      "sudo apt-key fingerprint 0EBFCD88",
+      "sudo apt-get -y update",
+      "sudo apt-get install docker-ce docker-ce-cli containerd.io",
+      "sudo curl -L 'https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)' -o /usr/local/bin/docker-compose",
+      "sudo chmod +x /usr/local/bin/docker-compose",
+      "docker-compose up"
+    ]
+  }
+  depends_on = ["aws_instance.web"]
 }

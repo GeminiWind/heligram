@@ -1,3 +1,8 @@
 output "address" {
-  value = "Instances: ${element(aws_instance.web.*.id, 0)}"
+  value = "Public DNS Instance: ${aws_instance.web.public_dns}"
+}
+
+output "private_key" {
+  value = "${tls_private_key.privkey.private_key_pem}"
+  sensitive = true
 }
