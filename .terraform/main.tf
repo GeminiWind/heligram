@@ -69,7 +69,7 @@ resource "aws_instance" "web" {
   }
 }
 
-resource "null_resource" "ssh_to_web_instance" {
+resource "null_resource" "install_dependencies" {
   connection {
     host        = "${aws_instance.web.public_dns}"
     type        = "ssh"
@@ -88,8 +88,42 @@ resource "null_resource" "ssh_to_web_instance" {
       "sudo apt-get install docker-ce docker-ce-cli containerd.io",
       "sudo curl -L 'https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)' -o /usr/local/bin/docker-compose",
       "sudo chmod +x /usr/local/bin/docker-compose",
-      "docker-compose up"
     ]
   }
   depends_on = ["aws_instance.web"]
+}
+
+resource "null_resource" "pull_code_base" {
+  connection {
+    host        = "${aws_instance.web.public_dns}"
+    type        = "ssh"
+    agent       = false
+    private_key = "${tls_private_key.privkey.private_key_pem}"
+    user        = "ubuntu"
+  }
+
+  provisioner "file" {
+    source      = "../"
+    destination = "/app"
+  }
+
+  depends_on = ["null_resource.install_dependencies"]  
+}
+
+resource "null_resource" "execute_app" {
+  connection {
+    host        = "${aws_instance.web.public_dns}"
+    type        = "ssh"
+    agent       = false
+    private_key = "${tls_private_key.privkey.private_key_pem}"
+    user        = "ubuntu"
+  }
+    
+  provisioner "remote-exec" {
+    inline = [
+      "cd /app",
+      "docker-compose up"
+    ]
+  }
+  depends_on = ["null_resource.pull_code_base"]
 }
