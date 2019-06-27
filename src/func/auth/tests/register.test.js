@@ -7,6 +7,15 @@ import register, {
 import { schemaValidator } from '../../../lib';
 import { BadRequestError, InternalError } from '../../../lib/errors';
 
+jest.mock('../../../lib/cache', () => ({
+  get: jest.fn(),
+  set: jest.fn(),
+  hget: jest.fn(),
+  hset: jest.fn(),
+  del: jest.fn(),
+  hdel: jest.fn(),
+}));
+
 describe('Register Controller', () => {
   it('return original request if request is valid with corresponding schema', () => {
     const request = {
