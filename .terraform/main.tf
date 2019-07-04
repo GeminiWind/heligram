@@ -21,7 +21,7 @@ data "aws_ami" "based_ubuntu_ami" {
 }
 
 resource "tls_private_key" "privkey" {
-    algorithm = "RSA" 
+    algorithm = "RSA"
     rsa_bits = 4096
 }
 
@@ -57,7 +57,7 @@ resource "aws_key_pair" "public_key" {
 }
 
 resource "aws_instance" "web" {
-  instance_type = "t2.small"
+  instance_type = "t2.micro"
   ami           = "${data.aws_ami.based_ubuntu_ami.id}"
 
   security_groups = ["${aws_security_group.security_group.name}"]
@@ -76,7 +76,7 @@ resource "null_resource" "install_dependencies" {
     agent       = false
     private_key = "${tls_private_key.privkey.private_key_pem}"
     user        = "ubuntu"
-  }  
+  }
   provisioner "remote-exec" {
     inline = [
       "sleep 20",
@@ -107,7 +107,7 @@ resource "null_resource" "pull_code_base" {
     destination = "/app"
   }
 
-  depends_on = ["null_resource.install_dependencies"]  
+  depends_on = ["null_resource.install_dependencies"]
 }
 
 resource "null_resource" "execute_app" {
@@ -118,7 +118,7 @@ resource "null_resource" "execute_app" {
     private_key = "${tls_private_key.privkey.private_key_pem}"
     user        = "ubuntu"
   }
-    
+
   provisioner "remote-exec" {
     inline = [
       "cd /app",
