@@ -5,14 +5,7 @@ node_js: '8.10'
 cache: yarn
 before_install:
   - sudo apt-get install awscli -y
-  - echo 'Writing AWS Credential to file ...'
-  - mkdir -p ~/.aws
-  - echo "
-    [default]\n
-    aws_access_key_id = ${AWS_ACCESS_KEY}\n
-    aws_secret_access_key = ${AWS_SECRET_KEY}\n
-    region = ${AWS_DEPLOYMENT_REGION}\n
-    " > ~/.aws/credentials
+  - aws s3 ls
   - curl -sLo /tmp/terraform.zip https://releases.hashicorp.com/terraform/0.12.3/terraform_0.12.3_linux_amd64.zip
   - unzip /tmp/terraform.zip -d /tmp
   - mv /tmp/terraform ~/bin
@@ -30,8 +23,7 @@ jobs:
       - provider: script
         skip_cleanup: true
         script:
-          cd ./.terraform
-          terraform init
+          terraform init ./.terraform
           terraform apply -var 'public_key_name=$PUBLIC_KEY_NAME'
         on:
           all_branches: true
