@@ -4,7 +4,7 @@ language: node_js
 node_js: '8.10'
 cache: yarn
 before_install:
-  - sudo apt-get install aws-cli -y
+  - sudo apt-get install awscli -y
   - echo 'Writing AWS Credential to file ...'
   - echo "[default] \n
       aws_access_key_id = ${AWS_SECRET_KEY} \n
