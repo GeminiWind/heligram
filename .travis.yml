@@ -6,10 +6,13 @@ cache: yarn
 before_install:
   - sudo apt-get install awscli -y
   - echo 'Writing AWS Credential to file ...'
-  - echo "[default] \n
-      aws_access_key_id = ${AWS_SECRET_KEY} \n
-      aws_secret_access_key = ${AWS_SECRET_KEY} \n
-      " > ~/.aws/credentials
+  - mkdir -p ~/.aws
+  - echo "
+    [default]\n
+    aws_access_key_id = ${AWS_ACCESS_KEY}\n
+    aws_secret_access_key = ${AWS_SECRET_KEY}\n
+    region = ${AWS_DEPLOYMENT_REGION}\n
+    " > ~/.aws/credentials
   - curl -sLo /tmp/terraform.zip https://releases.hashicorp.com/terraform/0.12.3/terraform_0.12.3_linux_amd64.zip
   - unzip /tmp/terraform.zip -d /tmp
   - mv /tmp/terraform ~/bin
