@@ -1,1 +1,4 @@
 #!/bin/bash
+
+terraform init ./.terraform
+terraform apply -var 'public_key_name=$PUBLIC_KEY_NAME' ./.terraform

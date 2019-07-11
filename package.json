@@ -9,7 +9,7 @@
     "test:integration": "yarn newman",
     "lint": "yarn eslint src/*",
     "build": "./scripts/build",
-    "deploy": "./scripts/deploy"
+    "deploy": " bash ./scripts/deploy"
   },
   "keywords": [
     "chat",
