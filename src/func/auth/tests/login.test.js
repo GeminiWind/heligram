@@ -10,6 +10,16 @@ import login, {
 import { schemaValidator } from '../../../lib';
 import { BadRequestError, NotFoundError } from '../../../lib/errors';
 
+jest.mock('../../../lib/cache', () => ({
+  get: jest.fn(),
+  set: jest.fn(),
+  hget: jest.fn(),
+  hset: jest.fn(),
+  del: jest.fn(),
+  hdel: jest.fn(),
+}));
+
+
 describe('Login Controller', () => {
   beforeAll(() => {
     process.env.APP_KEY = 'mock-app-key';

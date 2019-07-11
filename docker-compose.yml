@@ -18,6 +18,7 @@ services:
     volumes:
       - ./:/usr/src/app
       - /usr/src/app/node_modules/ # make node_module empty in container
+      - ./log:/var/log/app
     command: bash -c "npm install -g yarn && cd /usr/src/app && yarn && yarn start"
     restart: always
     links:
@@ -32,8 +33,9 @@ services:
     image: nginx
     container_name: web
     volumes:
-      - ./config/web/web.conf:/etc/nginx/nginx.conf
-      - ./nginx/cache/:/etc/nginx/cache
+      - ./.nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./.nginx/cache/:/etc/nginx/cache
+      - ./.nginx/log/:/var/log/nginx
     ports:
       - 80:80
     links:

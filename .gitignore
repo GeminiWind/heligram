@@ -21,7 +21,6 @@ log/*
 coverage
 .env.production
 
-nginx
-.terraform/.terraform
-.terraform/terraform.tfstate
-.terraform/terraform.tfstate.backup
+.nginx/cache
+.nginx/log
+!nginx/nginx.conf

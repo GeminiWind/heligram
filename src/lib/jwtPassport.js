@@ -14,7 +14,7 @@ export default function jwtPassport(passport) {
     } = jwtPayload;
 
     storageLibrary.findOne({
-      Path: `user/${email}`,
+      Path: `users/${email}`,
     }).then((record) => {
       if (record) {
         const {
