@@ -29,4 +29,9 @@ jobs:
       deploy:
       - provider: script
         skip_cleanup: true
-        script: yarn deploy
+        script:
+          cd ./.terraform
+          terraform init
+          terraform apply -var 'public_key_name=$PUBLIC_KEY_NAME'
+        on:
+          all_branches: true
