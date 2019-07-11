@@ -21,8 +21,8 @@ jobs:
       deploy:
       - provider: script
         skip_cleanup: true
-        script:
-          terraform init ./.terraform
-          terraform apply -var 'public_key_name=$PUBLIC_KEY_NAME' ./.terraform
+        script: cd ./.terraform &&
+          terraform init &&
+          terraform apply -var 'public_key_name=$PUBLIC_KEY_NAME' -var 'aws_region=$AWS_DEPLOYMENT_REGION'
         on:
           all_branches: true
