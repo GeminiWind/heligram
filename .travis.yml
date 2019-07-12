@@ -21,8 +21,6 @@ jobs:
       deploy:
       - provider: script
         skip_cleanup: true
-        script: cd ./.terraform &&
-          terraform init -backend-config "bucket=heligram-deployment-state-bucket-$STAGE" -backend-config "lock_table=heligram-lock-state-table-$STAGE" -backend-config "key=terraform.tfState.$STAGE" -backend-config "region=$AWS_DEPLOYMENT_REGION" &&
-          terraform apply -var 'public_key_name=$PUBLIC_KEY_NAME' -var 'aws_region=$AWS_DEPLOYMENT_REGION' -var 'stage=$STAGE'
+        script: chmod +x ./scripts/deploy && ./scripts/deploy
         on:
           all_branches: true
