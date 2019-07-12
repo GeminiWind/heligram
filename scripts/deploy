@@ -1,13 +1,28 @@
 #!/bin/bash
 
-cd ./terraform
+echo "Initial set up bucket for storing deployment state..."
+
+if [[ -z $(aws s3api head-bucket --bucket heligram-deployment-state-bucket-$STAGE) ]];
+then
+  echo "Bucket has already setup."
+else
+  echo "Creating S3 bucket and DynamoDB table to support storing deployment state ..."
+  terraform init ../.terraform-state-setup
+  terraform apply \
+    -var "aws_region=$AWS_DEPLOYMENT_REGION" \
+    -var "stage=$STAGE" \
+    .terraform-state-setup
+fi
+
 terraform init \
   -backend-config "bucket=heligram-deployment-state-bucket-$STAGE" \
   -backend-config "lock_table=heligram-lock-state-table-$STAGE" \
   -backend-config "key=terraform.tfState.$STAGE" \
-  -backend-config "region=$AWS_DEPLOYMENT_REGION"
+  -backend-config "region=$AWS_DEPLOYMENT_REGION" \
+  .terraform
 terraform apply \
   -auto-approve \
   -var "public_key_name=$PUBLIC_KEY_NAME" \
   -var "aws_region=$AWS_DEPLOYMENT_REGION" \
-  -var "stage=$STAGE"
+  -var "stage=$STAGE" \
+  .terraform
