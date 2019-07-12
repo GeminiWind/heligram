@@ -24,3 +24,11 @@ coverage
 .nginx/cache
 .nginx/log
 !nginx/nginx.conf
+
+.terraform/.terraform
+.terraform/terraform.tfstate
+.terraform/terraform.tfstate.backup
+
+.terraform-state-setup/.terraform
+.terraform-state-setup/terraform.tfstate
+.terraform-state-setup/terraform.tfstate.backup

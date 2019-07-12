@@ -1,3 +1,7 @@
+terraform {
+  backend "s3" {}
+}
+
 provider "aws" {
   region = "${var.aws_region}"
 }
@@ -64,6 +68,7 @@ resource "aws_instance" "web" {
 
   tags = {
     app = "Heligram"
+    stage = "${var.stage}"
   }
 }
 

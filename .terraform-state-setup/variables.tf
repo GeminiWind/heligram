@@ -5,9 +5,5 @@ variable "aws_region" {
 
 variable "stage" {
   description = "Stage where app should be deployed like dev, staging or prod."
-  default = "dev"
-}
-
-variable "public_key_name" {
-  description = "SSH Key name to connect your EC2."
+  default     = "dev"
 }
