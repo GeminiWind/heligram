@@ -107,7 +107,7 @@ resource "null_resource" "pull_code_base" {
 
   provisioner "file" {
     source      = "../"
-    destination = "/app"
+    destination = "/tmp"
   }
 
   depends_on = ["null_resource.install_dependencies"]
@@ -123,7 +123,7 @@ resource "null_resource" "execute_app" {
   }
   provisioner "remote-exec" {
     inline = [
-      "cd /app",
+      "ls -l /tmp",
       "docker-compose up"
     ]
   }
