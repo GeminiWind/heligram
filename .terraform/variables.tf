@@ -11,3 +11,7 @@ variable "stage" {
 variable "public_key_name" {
   description = "SSH Key name to connect your EC2."
 }
+
+variable "commit_sha" {
+  description = "The current commit "
+}
