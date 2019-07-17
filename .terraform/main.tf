@@ -79,7 +79,7 @@ resource "aws_instance" "web" {
   }
 }
 
-resource "null_resource" "pull_code_base" {
+resource "null_resource" "install_dep" {
   connection {
     host        = "${aws_instance.web.public_dns}"
     type        = "ssh"
@@ -103,13 +103,31 @@ resource "null_resource" "pull_code_base" {
       "sudo chmod +x /usr/local/bin/docker-compose",
       "sudo ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose",
       "docker-compose version",
-      "rm -rf /tmp/heligram",
-      "git clone https://github.com/GeminiWind/heligram /tmp/heligram",
-      "cd /tmp/heligram",
-      "git checkout ${var.commit_sha}",
-      "docker-compose up"
+      "sudo usermod -a -G docker ubuntu",
     ]
   }
 
   depends_on = ["aws_instance.web"]
+}
+
+resource "null_resource" "pull_code" {
+  connection {
+    host        = "${aws_instance.web.public_dns}"
+    type        = "ssh"
+    agent       = false
+    private_key = "${tls_private_key.privkey.private_key_pem}"
+    user        = "ubuntu"
+  }
+
+   provisioner "remote-exec" {
+    inline = [
+      "rm -rf /tmp/heligram",
+      "git clone https://github.com/GeminiWind/heligram /tmp/heligram",
+      "cd /tmp/heligram",
+      "git checkout ${var.commit_sha}",
+      "docker-compose up -d"
+    ]
+  }
+
+  depends_on = ["null_resource.install_dep"]
 }
