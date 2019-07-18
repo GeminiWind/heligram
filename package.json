@@ -6,10 +6,11 @@
   "scripts": {
     "start": "yarn nodemon --legacy-watch src/index.js --exec babel-node",
     "test:unit": "yarn jest",
+    "test": "yarn jest",
     "test:integration": "yarn newman",
     "lint": "yarn eslint src/*",
     "build": "./scripts/build",
-    "deploy": "./scripts/deploy"
+    "deploy": " bash ./scripts/deploy"
   },
   "keywords": [
     "chat",
