@@ -26,4 +26,7 @@ terraform apply \
   -var "aws_region=$AWS_DEPLOYMENT_REGION" \
   -var "stage=$STAGE" \
   -var "commit_sha=$TRAVIS_COMMIT" \
+  -var "cloudflare_email=$CLOUDFLARE_EMAIL" \
+  -var "cloudflare_token=$CLOUDFLARE_TOKEN" \
+  -var "root_domain=$ROOT_DOMAIN" \
   .terraform

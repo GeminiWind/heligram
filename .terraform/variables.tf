@@ -15,3 +15,15 @@ variable "public_key_name" {
 variable "commit_sha" {
   description = "The current commit "
 }
+
+variable "cloudflare_email" {
+  description = "Your registerd email in Cloudfare."
+}
+
+variable "cloudflare_token" {
+  description = "Your Cloudfare API Token."
+}
+
+variable "root_domain" {
+  description = "Your root domain in Cloudfare."
+}

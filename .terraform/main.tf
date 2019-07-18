@@ -6,6 +6,11 @@ provider "aws" {
   region = "${var.aws_region}"
 }
 
+provider "cloudflare" {
+  email = "${var.cloudflare_email}"
+  token = "${var.cloudflare_token}"
+}
+
 data "aws_ami" "xenial_16-04" {
   most_recent = true
 
@@ -130,4 +135,12 @@ resource "null_resource" "pull_code" {
   }
 
   depends_on = ["null_resource.install_dep"]
+}
+
+resource "cloudflare_record" "register_dns_record" {
+  domain  = "${var.root_domain}"
+  name    = "api-heligram"
+  value   = "${aws_instance.web.public_dns}"
+  type    = "CNAME"
+  proxied = true
 }
