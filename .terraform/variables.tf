@@ -10,6 +10,7 @@ variable "stage" {
 
 variable "public_key_name" {
   description = "SSH Key name to connect your EC2."
+  default = "heligram"
 }
 
 variable "commit_sha" {
